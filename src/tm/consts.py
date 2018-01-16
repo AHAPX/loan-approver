@@ -63,8 +63,8 @@ TITLE_CHOICES = (
 )
 
 MARITAL_CHOICES = (
-    (1, 'Single'),
-    (2, 'Married'),
+    (1, 'Married'),
+    (2, 'Single'),
     (3, 'Divorced'),
     (4, 'Separated'),
     (5, 'Widowed'),
@@ -78,10 +78,18 @@ RESIDENTIAL_CHOICES = (
     (4, 'Council tenant housing association'),
 )
 
+LIVE_WITH_CHOICES = (
+    (1, 'I live alone'),
+    (2, 'I am single parent'),
+    (3, 'I live with my partner'),
+    (4, 'I live in a house share'),
+    (5, 'I live with parents'),
+)
+
 EMPLOYMENT_CHOICES = (
     (1, 'Full time'),
     (2, 'Part time'),
-    (3, 'Self Employed'),
+    (3, 'Self employed'),
     (4, 'Unemployed'),
     (5, 'Home maker'),
     (6, 'Retired'),

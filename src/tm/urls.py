@@ -16,7 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from .views import SubmitView
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('v1/', include('rest_framework.urls'))
+    path('v1/', include('rest_framework.urls')),
+    path('submit/', SubmitView.as_view(), name='submit'),
 ]
