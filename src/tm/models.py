@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from .consts import (
@@ -142,3 +143,23 @@ class Applicant(models.Model):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
+
+
+class CallCredit(models.Model):
+    # full response
+    data = JSONField()
+
+    # personal
+    title = models.PositiveSmallIntegerField(choices=TITLE_CHOICES)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    date_of_birth = models.DateField()
+
+    # address
+    addr_flat = models.CharField(max_length=10, null=True, blank=True)
+    addr_house_name = models.CharField(max_length=30, null=True, blank=True)
+    addr_house_number = models.CharField(max_length=10, null=True, blank=True)
+    addr_street = models.CharField(max_length=30, null=True, blank=True)
+    addr_city = models.CharField(max_length=30, null=True, blank=True)
+    addr_country = models.CharField(max_length=50, null=True, blank=True)
+    addr_postcode = models.CharField(max_length=8, null=True, blank=True)
