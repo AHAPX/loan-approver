@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Introducer, Template, Product, Applicant
+from .models import Introducer, Template, Product, Applicant, Setting
 
 
 class IntroducerAdmin(admin.ModelAdmin):
@@ -24,6 +24,13 @@ class ApplicantAdmin(admin.ModelAdmin):
     ordering = ('introducer', 'first_name', 'last_name')
 
 
+class SettingAdmin(admin.ModelAdmin):
+    exclude = ('updated_at',)
+    list_display = ('key', 'name', 'type', 'value', 'updated_at')
+    ordering = ('name',)
+
+
 admin.site.register(Introducer, IntroducerAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Applicant, ApplicantAdmin)
+admin.site.register(Setting, SettingAdmin)

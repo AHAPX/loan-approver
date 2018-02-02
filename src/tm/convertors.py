@@ -26,7 +26,22 @@ class DateField(BaseField):
             return date(int(year), int(month), int(day))
         except:
             return None
-        
+
+
+class BaseConvertor():
+    fields = {}
+
+    def convert(self, data):
+        result = {}
+        for key, field in self.fields.items():
+            if isinstance(field, BaseField):
+                value = field.convert(data)
+            else:
+                value = data.get(field)
+            if value:
+                result[key] = value
+        return result
+
 
 SUBMIT_FIELDS = {
     'auth_code': 'auth',
@@ -63,13 +78,5 @@ SUBMIT_FIELDS = {
 }
 
 
-def convert(data, convertor):
-    result = {}
-    for key, field in convertor.items():
-        if isinstance(field, BaseField):
-            value = field.convert(data)
-        else:
-            value = data.get(field)
-        if value:
-            result[key] = value
-    return result
+class ApplicantConvertor(BaseConvertor):
+    fields = SUBMIT_FIELDS

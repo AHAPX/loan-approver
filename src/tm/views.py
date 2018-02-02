@@ -4,7 +4,8 @@ from django.http import HttpResponse, JsonResponse, Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .convertors import convert, SUBMIT_FIELDS
+from .checkers import PreChecker
+from .convertors import ApplicantConvertor
 from .models import Introducer
 from .serializers import ApplicantSerializer
 
@@ -18,7 +19,7 @@ class SubmitView(APIView):
     """
 
     def get(self, request):
-        data = convert(request.query_params, SUBMIT_FIELDS)
+        data = ApplicantConvertor().convert(request.query_params)
         try:
             introducer = Introducer.objects.get(auth_code=data.get('auth_code'))
             data['introducer'] = introducer.id
@@ -27,5 +28,9 @@ class SubmitView(APIView):
         serializer = ApplicantSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
+            errors = PreChecker().check(serializer.instance)
+            if errors:
+                return Response(errors, status=400)
+            # go to step2
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)

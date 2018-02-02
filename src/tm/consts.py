@@ -107,3 +107,11 @@ PAY_FREQUENCY_CHOICES = (
     (3, 'Fortnightly'),
     (4, 'FourWeekly'),
 )
+
+
+SETTING_TYPE_CHOICES = (
+    ('str', 'str'),
+    ('int', 'int'),
+    ('float', 'float'),
+    ('bool', 'bool'),
+)

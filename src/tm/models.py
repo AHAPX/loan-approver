@@ -4,8 +4,9 @@ from django.db import models
 from .consts import (
     STATES, TEMPLATES_CHOICES, SEX_CHOICES, TITLE_CHOICES, MARITAL_CHOICES,
     RESIDENTIAL_CHOICES, EMPLOYMENT_CHOICES, PAYMENT_CHOICES,
-    PAY_FREQUENCY_CHOICES, LIVE_WITH_CHOICES,
+    PAY_FREQUENCY_CHOICES, LIVE_WITH_CHOICES, SETTING_TYPE_CHOICES
 )
+from .formatters import TypeFormatter
 
 
 class Introducer(models.Model):
@@ -163,3 +164,24 @@ class CallCredit(models.Model):
     addr_city = models.CharField(max_length=30, null=True, blank=True)
     addr_country = models.CharField(max_length=50, null=True, blank=True)
     addr_postcode = models.CharField(max_length=8, null=True, blank=True)
+
+
+class Setting(models.Model):
+    key = models.CharField(max_length=30)
+    name = models.CharField(max_length=50)
+    type = models.CharField(max_length=10, default='str', choices=SETTING_TYPE_CHOICES)
+    value = models.CharField(max_length=30, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.name}'
+
+    def get_value(self):
+        return TypeFormatter().format(self.type, self.value)
+
+    @classmethod
+    def get_setting(cls, key):
+        try:
+            return cls.objects.get(key=key)
+        except cls.DoesNotExist:
+            return None
