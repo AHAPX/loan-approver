@@ -4,9 +4,10 @@ from django.http import HttpResponse, JsonResponse, Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .checkers import PreChecker
+from .callcredit import search_request
+from .checkers import PreChecker, CallCreditChecker
 from .convertors import ApplicantConvertor
-from .models import Introducer
+from .models import Introducer, CallCredit
 from .serializers import ApplicantSerializer
 
 
@@ -31,6 +32,15 @@ class SubmitView(APIView):
             errors = PreChecker().check(serializer.instance)
             if errors:
                 return Response(errors, status=400)
-            # go to step2
-            return Response(serializer.data, status=201)
+            try:
+                data = search_request(serializer.instance)
+            except Exception as e:
+                logger.error(e)
+                return Response('wrong data', status=400)
+            cc = CallCredit(applicant=serializer.instance, data=data)
+            cc.extract()
+            errors = CallCreditChecker().check(cc)
+            if errors:
+                return Response(errors, status=400)
+            return Response(data, status=201)
         return Response(serializer.errors, status=400)

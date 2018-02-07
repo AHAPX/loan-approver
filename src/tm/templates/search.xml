@@ -1,0 +1,64 @@
+{% load tm_tags %}
+{% autoescape off %}
+<soap:Envelope xmlns:ns="http://www.callcredit.co.uk/SingleAccessPointService/ISingleAccessPointService/1.0" xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+    <soap:Header>
+        <Security xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+            <UsernameToken>
+                <Username>{{ callcredit.username }}</Username>
+                <Password>{{ callcredit.password }}</Password>
+            </UsernameToken>
+        </Security>
+    </soap:Header>
+    <soap:Body>
+        <ns:Search>
+            <ns:request>
+                <ns:Individuals>
+                    <ns:Individual>
+                        <ns:DateOfBirth>{{ applicant.date_of_birth|date:"Y-m-d" }}</ns:DateOfBirth>
+                        <ns:Names>
+                            <ns:Name>
+                                <ns:Title>{{ applicant.get_title_display }}</ns:Title>
+                                <ns:GivenName>{{ applicant.first_name }}</ns:GivenName>
+                                <ns:OtherNames />
+                                <ns:FamilyName1>{{ applicant.last_name }}</ns:FamilyName1>
+                            </ns:Name>
+                        </ns:Names>
+                        <ns:Addresses>
+                            <ns:Address>
+                                {{ applicant.addr_flat|element:"ns:Line2" }}
+                                {{ applicant.addr_street|element:"ns:Line4" }}
+                                {{ applicant.addr_city|element:"ns:Line8" }}
+                                {{ applicant.addr_postcode|element:"ns:Line10" }}
+                                {{ applicant.addr_country|element:"ns:CountryCode" }}
+                            </ns:Address>
+                            {% if applicant.addr2_city %}
+                            <ns:Address>
+                                {{ applicant.addr2_flat|element:"ns:Line2" }}
+                                {{ applicant.addr2_street|element:"ns:Line4" }}
+                                {{ applicant.addr2_city|element:"ns:Line8" }}
+                                {{ applicant.addr2_postcode|element:"ns:Line10" }}
+                                {{ applicant.addr2_country|element:"ns:CountryCode" }}
+                            </ns:Address>
+                            {% endif %}
+                        </ns:Addresses>
+                        <ns:ApplicationSettings>
+                            <ns:HouseholdSearchEnabled>false</ns:HouseholdSearchEnabled>
+                            <ns:ThirdPartyOptOut>true</ns:ThirdPartyOptOut>
+                        </ns:ApplicationSettings>
+                    </ns:Individual>
+                </ns:Individuals>
+                <ns:ProductsToCall>
+					<ns:BSBAndCreditReport7 DataSets="511">
+						<ns:Purpose>QS</ns:Purpose>
+						<ns:Score>1</ns:Score>
+					</ns:BSBAndCreditReport7>
+					<ns:AffordabilityReport2>
+						<ns:SearchPurpose>NewApplication</ns:SearchPurpose>
+						<ns:ProductType>Loan</ns:ProductType>
+					</ns:AffordabilityReport2>
+                </ns:ProductsToCall>
+            </ns:request>
+        </ns:Search>
+    </soap:Body>
+</soap:Envelope>
+{% endautoescape %}

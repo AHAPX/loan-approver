@@ -1,6 +1,15 @@
 from datetime import date
+import logging
+import requests
+
+from django.template.loader import render_to_string
+from django.conf import settings
+import xmltodict
 
 from .models import Setting
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_age(dt):
@@ -20,62 +29,113 @@ def equal(value1, value2):
     return value1 == value2
 
 
-class PreChecker():
-    rules = {
-        'age_min': {
-            'field': 'date_of_birth',
-            'format': get_age,
-            'check': gte,
-        },
-        'age_max': {
-            'field': 'date_of_birth',
-            'format': get_age,
-            'check': lte,
-        },
-        'income_min': {
-            'field': 'income',
-            'check': gte,
-        },
-        'loan_amount_min': {
-            'field': 'loan_amount',
-            'check': gte,
-        },
-        'loan_amount_max': {
-            'field': 'loan_amount',
-            'check': lte,
-        },
-        'employer': {
-            'field': 'employer_name',
-            'format': bool,
-            'check': equal,
-        },
-        'employment_status': {
-            'field': 'employment_status',
-            'check': equal,
-        },
-        'occupation': {
-            'field': 'occupation',
-            'format': bool,
-            'check': equal,
-        },
-        'postcode': {
-            'field': 'addr_postcode',
-            'format': bool,
-            'check': equal,
-        },
-    }
+RULES_PRE = {
+    'age_min': {
+        'field': 'date_of_birth',
+        'format': get_age,
+        'check': gte,
+    },
+    'age_max': {
+        'field': 'date_of_birth',
+        'format': get_age,
+        'check': lte,
+    },
+    'income_min': {
+        'field': 'income',
+        'check': gte,
+    },
+    'loan_amount_min': {
+        'field': 'loan_amount',
+        'check': gte,
+    },
+    'loan_amount_max': {
+        'field': 'loan_amount',
+        'check': lte,
+    },
+    'employer': {
+        'field': 'employer_name',
+        'format': bool,
+        'check': equal,
+    },
+    'employment_status': {
+        'field': 'employment_status',
+        'check': equal,
+    },
+    'occupation': {
+        'field': 'occupation',
+        'format': bool,
+        'check': equal,
+    },
+    'postcode': {
+        'field': 'addr_postcode',
+        'format': bool,
+        'check': equal,
+    },
+}
+
+# TODO: not correct rules, just for test, need to be change
+RULES_CALL_CREDIT = {
+    'credit_score_min': {
+        'field': 'credit_score',
+        'check': gte,
+    },
+    'credit_score_with_mortgage_min': {
+        'field': 'credit_score_with_mortgage',
+        'check': gte,
+    },
+    'indebt_min': {
+        'field': 'indebt_min',
+        'check': gte,
+    },
+    'delinquent_mortgage': {
+        'field': 'delinquent_mortgage',
+        'format': bool,
+        'check': equal,
+    },
+    'active_bunkruptcy': {
+        'field': 'active_bunkruptcy',
+        'format': bool,
+        'check': equal,
+    },
+    'debt_in_income_min': {
+        'field': 'debt_in_income_min',
+        'check': gte,
+    },
+    'debt_in_income_max': {
+        'field': 'debt_in_income_max',
+        'check': lte,
+    },
+    'last_credit': {
+        'field': 'last_credit',
+        'check': gte,
+    },
+}
+
+
+
+class BaseChecker():
+    rules = {}
 
     def check(self, applicant):
         errors = []
         for key, rule in self.rules.items():
-            setting = Setting.get_setting(key)
-            setting_value = setting.get_value()
+            setting = Setting.get_setting()
+            setting_value = getattr(setting, key, None)
             if setting_value is None:
                 continue
             field = rule['field']
-            value = hasattr(applicant, field) and getattr(applicant, field)
+            value = getattr(applicant, field, None)
             if rule.get('format'):
                 value = rule['format'](value)
             if not rule['check'](value, setting_value):
-                errors.append(setting.name)
+                print('error')
+                errors.append(key)
         return errors
+
+
+class PreChecker(BaseChecker):
+    rules = RULES_PRE
+
+
+class CallCreditChecker(BaseChecker):
+    rules = RULES_CALL_CREDIT

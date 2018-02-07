@@ -6,6 +6,7 @@ from .consts import (
     RESIDENTIAL_CHOICES, EMPLOYMENT_CHOICES, PAYMENT_CHOICES,
     PAY_FREQUENCY_CHOICES, LIVE_WITH_CHOICES, SETTING_TYPE_CHOICES
 )
+from .convertors import CallCreditConvertor
 from .formatters import TypeFormatter
 
 
@@ -148,40 +149,52 @@ class Applicant(models.Model):
 
 class CallCredit(models.Model):
     # full response
+    applicant = models.ForeignKey(Applicant, related_name='callcredits', on_delete=models.CASCADE)
     data = JSONField()
 
-    # personal
-    title = models.PositiveSmallIntegerField(choices=TITLE_CHOICES)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    date_of_birth = models.DateField()
+    # QS report
+    credit_score = models.IntegerField(null=True)
+    credit_score_with_mortgage = models.IntegerField(null=True)
+    indebt_min = models.FloatField(null=True)
+    delinquent_mortgage = models.BooleanField(default=False)
+    active_bunkruptcy = models.BooleanField(default=False)
+    debt_in_income_min = models.FloatField(null=True)
+    debt_in_income_max = models.FloatField(null=True)
+    last_credit = models.DateTimeField(null=True)
 
-    # address
-    addr_flat = models.CharField(max_length=10, null=True, blank=True)
-    addr_house_name = models.CharField(max_length=30, null=True, blank=True)
-    addr_house_number = models.CharField(max_length=10, null=True, blank=True)
-    addr_street = models.CharField(max_length=30, null=True, blank=True)
-    addr_city = models.CharField(max_length=30, null=True, blank=True)
-    addr_country = models.CharField(max_length=50, null=True, blank=True)
-    addr_postcode = models.CharField(max_length=8, null=True, blank=True)
+    # affordability
+    confidence_factor = models.FloatField(null=True)
+    indicator_red = models.BooleanField(default=False)
+
+    def extract(self):
+        data = CallCreditConvertor().convert(self.data)
+        for key, value in data.items():
+            setattr(self, key, value)
+        self.save()
 
 
 class Setting(models.Model):
-    key = models.CharField(max_length=30)
     name = models.CharField(max_length=50)
-    type = models.CharField(max_length=10, default='str', choices=SETTING_TYPE_CHOICES)
-    value = models.CharField(max_length=30, null=True, blank=True)
+    is_active = models.BooleanField(default=False)
     updated_at = models.DateTimeField(auto_now=True)
+
+    age_max = models.IntegerField(default=64, blank=True)
+    age_min = models.IntegerField(default=25, blank=True)
+    employment_status = models.PositiveSmallIntegerField(
+        choices=EMPLOYMENT_CHOICES, default=1, blank=True)
+    income_min = models.FloatField(default=1000, blank=True)
+    loan_amount_min = models.FloatField(default=500, blank=True)
+    loan_amount_max = models.FloatField(default=2000, blank=True)
+    employer = models.BooleanField(default=True, blank=True)
+    occupation = models.BooleanField(default=True, blank=True)
+    postcode = models.BooleanField(default=True, blank=True)
 
     def __str__(self):
         return f'{self.name}'
 
-    def get_value(self):
-        return TypeFormatter().format(self.type, self.value)
-
     @classmethod
-    def get_setting(cls, key):
-        try:
-            return cls.objects.get(key=key)
-        except cls.DoesNotExist:
-            return None
+    def get_setting(cls):
+        instances = cls.objects.filter(is_active=True).order_by('id')
+        if len(instances):
+            return instances[0]
+        return None

@@ -131,6 +131,7 @@ REST_FRAMEWORK = {
     ]
 }
 
+CALL_CREDIT = {}
 
 try:
     from .local import *
