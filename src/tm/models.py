@@ -4,7 +4,8 @@ from django.db import models
 from .consts import (
     STATES, TEMPLATES_CHOICES, SEX_CHOICES, TITLE_CHOICES, MARITAL_CHOICES,
     RESIDENTIAL_CHOICES, EMPLOYMENT_CHOICES, PAYMENT_CHOICES,
-    PAY_FREQUENCY_CHOICES, LIVE_WITH_CHOICES, SETTING_TYPE_CHOICES
+    PAY_FREQUENCY_CHOICES, LIVE_WITH_CHOICES, SETTING_TYPE_CHOICES,
+    RESULT_CHOICES
 )
 from .convertors import CallCreditConvertor
 from .formatters import TypeFormatter
@@ -198,3 +199,25 @@ class Setting(models.Model):
         if len(instances):
             return instances[0]
         return None
+
+
+class History(models.Model):
+    applicant = models.ForeignKey(Applicant, related_name='history', on_delete=models.CASCADE)
+    call_credit = models.ForeignKey(
+        CallCredit,
+        null=True,
+        related_name='history',
+        on_delete=models.CASCADE
+    )
+    result = models.PositiveSmallIntegerField(choices=RESULT_CHOICES)
+    data = JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def add(cls, applicant, result, call_credit=None, data={}):
+        return cls.objects.create(
+            applicant=applicant,
+            result=result,
+            call_credit=call_credit,
+            data=data
+        )

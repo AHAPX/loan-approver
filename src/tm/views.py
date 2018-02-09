@@ -6,8 +6,12 @@ from rest_framework.response import Response
 
 from .callcredit import search_request
 from .checkers import PreChecker, CallCreditChecker
+from .consts import (
+    RESULT_SUCCESS, RESULT_WRONG_DATA, RESULT_REJECT_INTERNAL,
+    RESULT_REJECT_CALL_CREDIT
+)
 from .convertors import ApplicantConvertor
-from .models import Introducer, CallCredit
+from .models import Introducer, CallCredit, History
 from .serializers import ApplicantSerializer
 
 
@@ -29,18 +33,54 @@ class SubmitView(APIView):
         serializer = ApplicantSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            errors = PreChecker().check(serializer.instance)
+            a1 = serializer.instance
+            applicant = serializer.instance
+            errors = PreChecker().check(applicant)
             if errors:
-                return Response(errors, status=400)
+                History.add(
+                    applicant,
+                    RESULT_REJECT_INTERNAL,
+                    data={'fields': errors}
+                )
+                return Response({
+                    'Result': 'Invalid Data',
+                    'CustomerID': introducer.id,
+                    'Error': 'Invalid Format',
+                }, status=400)
             try:
-                data = search_request(serializer.instance)
+                data = search_request(applicant)
             except Exception as e:
                 logger.error(e)
-                return Response('wrong data', status=400)
-            cc = CallCredit(applicant=serializer.instance, data=data)
+                History.add(applicant, RESULT_WRONG_DATA)
+                return Response({
+                    'Result': 'Invalid Data',
+                    'CustomerID': introducer.id,
+                    'Error': 'Invalid Format',
+                }, status=400)
+            cc = CallCredit(applicant=applicant, data=data)
             cc.extract()
             errors = CallCreditChecker().check(cc)
             if errors:
-                return Response(errors, status=400)
-            return Response(data, status=201)
-        return Response(serializer.errors, status=400)
+                History.add(
+                    applicant,
+                    RESULT_REJECT_CALL_CREDIT,
+                    call_credit=cc,
+                    data={'fields': errors}
+                )
+                return Response({
+                    'Result': 'Rejected',
+                    'CustomerID': introducer.id,
+                }, status=400)
+            History.add(applicant, RESULT_SUCCESS, call_credit=cc)
+            return Response({
+                'Result': 'Accepted',
+                'CustomerID': introducer.id,
+                'RedirectURL': '#TODO',
+                'Commission': '#TODO',
+                'Amount': '#TODO',
+            })
+        return Response({
+            'Result': 'Invalid Data',
+            'CustomerID': introducer.id,
+            'Error': 'Mandatory Field',
+        }, status=400)

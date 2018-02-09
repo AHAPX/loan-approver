@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from .models import Introducer, Template, Product, Applicant, Setting, CallCredit
+from .models import (
+    Introducer, Template, Product, Applicant, Setting, CallCredit, History
+)
 
 
 class IntroducerAdmin(admin.ModelAdmin):
@@ -34,8 +36,15 @@ class CallCreditAdmin(admin.ModelAdmin):
     list_display = ('applicant',)
 
 
+class HistoryAdmin(admin.ModelAdmin):
+    exclude = ('created_at',)
+    list_display = ('applicant', 'result',)
+    ordering = ('-created_at',)
+
+
 admin.site.register(Introducer, IntroducerAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Applicant, ApplicantAdmin)
 admin.site.register(Setting, SettingAdmin)
 admin.site.register(CallCredit, CallCreditAdmin)
+admin.site.register(History, HistoryAdmin)

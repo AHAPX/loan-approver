@@ -116,7 +116,7 @@ RULES_CALL_CREDIT = {
 class BaseChecker():
     rules = {}
 
-    def check(self, applicant):
+    def check(self, item):
         errors = []
         for key, rule in self.rules.items():
             setting = Setting.get_setting()
@@ -124,11 +124,12 @@ class BaseChecker():
             if setting_value is None:
                 continue
             field = rule['field']
-            value = getattr(applicant, field, None)
+            value = getattr(item, field, None)
+            if value == None:
+                errors.append(key)
             if rule.get('format'):
                 value = rule['format'](value)
             if not rule['check'](value, setting_value):
-                print('error')
                 errors.append(key)
         return errors
 

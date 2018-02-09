@@ -115,3 +115,15 @@ SETTING_TYPE_CHOICES = (
     ('float', 'float'),
     ('bool', 'bool'),
 )
+
+RESULT_SUCCESS = 1
+RESULT_WRONG_DATA = 2
+RESULT_REJECT_INTERNAL = 5
+RESULT_REJECT_CALL_CREDIT = 6
+
+RESULT_CHOICES = (
+    (RESULT_SUCCESS, 'Success'),
+    (RESULT_WRONG_DATA, 'Wrong data'),
+    (RESULT_REJECT_INTERNAL, 'Rejected internal'),
+    (RESULT_REJECT_CALL_CREDIT, 'Rejected call credit'),
+)
