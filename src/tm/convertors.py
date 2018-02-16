@@ -113,7 +113,7 @@ SUBMIT_FIELDS = {
     'employment_payment': 'pm',
     'income': 'mi',
     'bank_next_pay_date': DateField('npdy', 'npdm', 'npdd'),
-    'addr2_since': DateField('pdmim', 'pdmiy'),
+    'addr2_since': DateField('pdmiy', 'pdmim'),
     'addr2_addr': 'pa1',
     'addr2_city': 'ptn',
     'addr2_country': 'pct',

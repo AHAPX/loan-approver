@@ -127,6 +127,7 @@ class BaseChecker():
             value = getattr(item, field, None)
             if value == None:
                 errors.append(key)
+                continue
             if rule.get('format'):
                 value = rule['format'](value)
             if not rule['check'](value, setting_value):

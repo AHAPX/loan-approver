@@ -8,7 +8,6 @@ from .consts import (
     RESULT_CHOICES
 )
 from .convertors import CallCreditConvertor
-from .formatters import TypeFormatter
 
 
 class Introducer(models.Model):
