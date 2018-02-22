@@ -16,11 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from .views import SubmitView
+from . import views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('v1/', include('rest_framework.urls')),
-    path('submit/', SubmitView.as_view(), name='submit'),
+    path('v1/introducers/', views.IntroducerList.as_view()),
+    path('v1/introducers/<int:pk>/', views.IntroducerDetail.as_view()),
+    path('v1/templates/', views.TemplateList.as_view()),
+    path('v1/templates/<int:pk>/', views.TemplateDetail.as_view()),
+    path('v1/settings/', views.SettingView.as_view(), name='setting'),
+    path('submit/', views.SubmitView.as_view(), name='submit'),
 ]

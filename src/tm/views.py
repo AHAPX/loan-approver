@@ -1,6 +1,7 @@
 import logging
 
 from django.http import HttpResponse, JsonResponse, Http404
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -11,8 +12,10 @@ from .consts import (
     RESULT_REJECT_CALL_CREDIT
 )
 from .convertors import ApplicantConvertor
-from .models import Introducer, CallCredit, History
-from .serializers import ApplicantSerializer
+from .models import Introducer, CallCredit, History, Template, Setting
+from .serializers import (
+    ApplicantSerializer, IntroducerSerializer, TemplateSerializer, SettingSerializer
+)
 
 
 logger = logging.getLogger(__name__)
@@ -84,3 +87,46 @@ class SubmitView(APIView):
             'CustomerID': introducer.id,
             'Error': 'Mandatory Field',
         }, status=400)
+
+
+class IntroducerList(generics.ListCreateAPIView):
+    queryset = Introducer.objects.all()
+    serializer_class = IntroducerSerializer
+
+
+class IntroducerDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Introducer.objects.all()
+    serializer_class = IntroducerSerializer
+
+
+class TemplateList(generics.ListCreateAPIView):
+    queryset = Template.objects.all()
+    serializer_class = TemplateSerializer
+
+
+class TemplateDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Template.objects.all()
+    serializer_class = TemplateSerializer
+
+
+class SettingView(APIView):
+    fields = (
+        'age_max', 'age_min', 'employment_status', 'income_min',
+        'loan_amount_min', 'loan_amount_max', 'employer', 'occupation',
+        'postcode',
+    )
+
+    def get(self, request):
+        setting = Setting.get_setting()
+        data = {}
+        for field in self.fields:
+            data[field] = getattr(setting, field, None)
+        return Response(data)
+
+    def put(self, request):
+        setting = Setting.get_setting()
+        serializer = SettingSerializer(instance=setting, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)

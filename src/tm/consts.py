@@ -1,26 +1,25 @@
 from enum import Enum
 
 
-class TEMPLATES(Enum):
-    LOANPACK = 1
-    CANCEL_FORM = 2
-    REFUND = 3
-    LOAN_AGREEMENT = 4
-    EXPLANATIONS = 5
-    SECCI = 6
-    FAIL_SCORE = 7
-    BANK_STATEMENT = 8
-    VERIFY_MOBILE = 9
-    VERIFY_LANDLINE = 10
-    SEND_EXPAND_SECCI = 11
-    MAX_PROD_ASSIGNED = 12
-    SMS_MAX_PROD_ASSIGNED = 13
-    THANK_YOU = 14
-    AGREEMENT_UNSIGNED = 15
-    AGREEMENT_SIGNED = 16
-    WHEN_DECLINED = 17
-    WHEN_FUNDED = 18
-    WHEN_SIGNED_OFF = 19
+LOANPACK = 1
+CANCEL_FORM = 2
+REFUND = 3
+LOAN_AGREEMENT = 4
+EXPLANATIONS = 5
+SECCI = 6
+FAIL_SCORE = 7
+BANK_STATEMENT = 8
+VERIFY_MOBILE = 9
+VERIFY_LANDLINE = 10
+SEND_EXPAND_SECCI = 11
+MAX_PROD_ASSIGNED = 12
+SMS_MAX_PROD_ASSIGNED = 13
+THANK_YOU = 14
+AGREEMENT_UNSIGNED = 15
+AGREEMENT_SIGNED = 16
+WHEN_DECLINED = 17
+WHEN_FUNDED = 18
+WHEN_SIGNED_OFF = 19
 
 
 class STATES(Enum):
@@ -28,25 +27,25 @@ class STATES(Enum):
 
 
 TEMPLATES_CHOICES = (
-    (TEMPLATES.LOANPACK, 'Loan Pack'),
-    (TEMPLATES.CANCEL_FORM, 'Cancellation Form'),
-    (TEMPLATES.REFUND, 'Refund Confirmation'),
-    (TEMPLATES.LOAN_AGREEMENT, 'Loan Agreement'),
-    (TEMPLATES.EXPLANATIONS, 'Explanations'),
-    (TEMPLATES.SECCI, 'SECCI'),
-    (TEMPLATES.FAIL_SCORE, 'Failed Credit Score'),
-    (TEMPLATES.BANK_STATEMENT, 'Bank Statement Needed'),
-    (TEMPLATES.VERIFY_MOBILE, 'Verify Mobile PIN'),
-    (TEMPLATES.VERIFY_LANDLINE, 'Verify Landline PIN'),
-    (TEMPLATES.SEND_EXPAND_SECCI, 'Send explantion and SECCI'),
-    (TEMPLATES.MAX_PROD_ASSIGNED, 'EMail: Product Assigned'),
-    (TEMPLATES.SMS_MAX_PROD_ASSIGNED, 'SMS: Product Assigned'),
-    (TEMPLATES.THANK_YOU, 'Thank You Page'),
-    (TEMPLATES.AGREEMENT_UNSIGNED, 'SMS: Agreement unsigned for 10 mins'),
-    (TEMPLATES.AGREEMENT_SIGNED, 'SMS: 10 mins after agreement signed'),
-    (TEMPLATES.WHEN_DECLINED, 'SMS: When declined by underwriter'),
-    (TEMPLATES.WHEN_FUNDED, 'SMS: When funded'),
-    (TEMPLATES.WHEN_SIGNED_OFF, 'SMS: When signed off'),
+    (LOANPACK, 'Loan Pack'),
+    (CANCEL_FORM, 'Cancellation Form'),
+    (REFUND, 'Refund Confirmation'),
+    (LOAN_AGREEMENT, 'Loan Agreement'),
+    (EXPLANATIONS, 'Explanations'),
+    (SECCI, 'SECCI'),
+    (FAIL_SCORE, 'Failed Credit Score'),
+    (BANK_STATEMENT, 'Bank Statement Needed'),
+    (VERIFY_MOBILE, 'Verify Mobile PIN'),
+    (VERIFY_LANDLINE, 'Verify Landline PIN'),
+    (SEND_EXPAND_SECCI, 'Send explantion and SECCI'),
+    (MAX_PROD_ASSIGNED, 'EMail: Product Assigned'),
+    (SMS_MAX_PROD_ASSIGNED, 'SMS: Product Assigned'),
+    (THANK_YOU, 'Thank You Page'),
+    (AGREEMENT_UNSIGNED, 'SMS: Agreement unsigned for 10 mins'),
+    (AGREEMENT_SIGNED, 'SMS: 10 mins after agreement signed'),
+    (WHEN_DECLINED, 'SMS: When declined by underwriter'),
+    (WHEN_FUNDED, 'SMS: When funded'),
+    (WHEN_SIGNED_OFF, 'SMS: When signed off'),
 )
 
 SEX_CHOICES = (

@@ -197,7 +197,7 @@ class Setting(models.Model):
         instances = cls.objects.filter(is_active=True).order_by('id')
         if len(instances):
             return instances[0]
-        return None
+        return cls.objects.create(is_active=True)
 
 
 class History(models.Model):
