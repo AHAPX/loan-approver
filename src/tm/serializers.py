@@ -4,7 +4,7 @@ from .models import Applicant, Introducer, Template
 from .consts import EMPLOYMENT_CHOICES
 
 
-class ApplicantSerializer(serializers.ModelSerializer):
+class SubmitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Applicant
         fields = (
@@ -15,6 +15,29 @@ class ApplicantSerializer(serializers.ModelSerializer):
             'employment_status', 'employer_name', 'occupation', 'employee_since',
             'employment_payment', 'income', 'bank_next_pay_date', 'addr2_since',
             'addr2_city', 'addr2_country', 'addr2_postcode', 'reference_id',
+        )
+
+
+class ApplicantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Applicant
+        fields = (
+            'id', 'introducer', 'loan_amount', 'loan_term', 'loan_purpose',
+            'title', 'first_name', 'last_name', 'date_of_birth', 'sex',
+            'phone_landline', 'phone_mobile', 'email', 'dependents',
+            'residential_status', 'live_with', 'rent_mortgage', 'marital_status',
+            'adults', 'children', 'cars', 'partner_income', 'partner_contrib',
+            'child_care_costs',
+            'addr_flat', 'addr_house_name', 'addr_house_number', 'addr_street',
+            'addr_city', 'addr_country', 'addr_postcode', 'addr_since',
+            'addr_electral_roll', 'addr_credit',
+            'addr2_flat', 'addr2_house_name', 'addr2_house_number', 'addr2_street',
+            'addr2_city', 'addr2_country', 'addr2_postcode', 'addr2_since',
+            'employment_status', 'employer_name', 'occupation', 'employer_address',
+            'employee_since', 'employment_payment', 'job_title', 'income',
+            'income_split', 'nin',
+            'bank_sort_code', 'bank_account_number', 'bank_pay_frequency',
+            'bank_next_pay_date', 'no_dd', 'reference_id',
         )
 
 

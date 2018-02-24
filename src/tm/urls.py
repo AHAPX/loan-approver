@@ -22,6 +22,8 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('v1/', include('rest_framework.urls')),
+    path('v1/applicants/', views.ApplicantList.as_view()),
+    path('v1/applicants/<int:pk>/', views.ApplicantDetail.as_view()),
     path('v1/introducers/', views.IntroducerList.as_view()),
     path('v1/introducers/<int:pk>/', views.IntroducerDetail.as_view()),
     path('v1/templates/', views.TemplateList.as_view()),

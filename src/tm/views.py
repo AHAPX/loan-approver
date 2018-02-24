@@ -12,9 +12,10 @@ from .consts import (
     RESULT_REJECT_CALL_CREDIT
 )
 from .convertors import ApplicantConvertor
-from .models import Introducer, CallCredit, History, Template, Setting
+from .models import Applicant, Introducer, CallCredit, History, Template, Setting
 from .serializers import (
-    ApplicantSerializer, IntroducerSerializer, TemplateSerializer, SettingSerializer
+    SubmitSerializer, ApplicantSerializer, IntroducerSerializer,
+    TemplateSerializer, SettingSerializer
 )
 
 
@@ -33,7 +34,7 @@ class SubmitView(APIView):
             data['introducer'] = introducer.id
         except Introducer.DoesNotFound:
             raise Http404
-        serializer = ApplicantSerializer(data=data)
+        serializer = SubmitSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             a1 = serializer.instance
@@ -87,6 +88,16 @@ class SubmitView(APIView):
             'CustomerID': introducer.id,
             'Error': 'Mandatory Field',
         }, status=400)
+
+
+class ApplicantList(generics.ListAPIView):
+    queryset = Applicant.objects.all()
+    serializer_class = ApplicantSerializer
+
+
+class ApplicantDetail(generics.RetrieveUpdateAPIView):
+    queryset = Applicant.objects.all()
+    serializer_class = ApplicantSerializer
 
 
 class IntroducerList(generics.ListCreateAPIView):

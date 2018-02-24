@@ -105,6 +105,8 @@ class Applicant(models.Model):
     addr_country = models.CharField(max_length=50, null=True, blank=True)
     addr_postcode = models.CharField(max_length=8, null=True, blank=True)
     addr_since = models.DateField(null=True, blank=True)
+    addr_electral_roll = models.CharField(max_length=50, null=True, blank=True)
+    addr_credit = models.CharField(max_length=50, null=True, blank=True)
 
     # previous address
     addr2_flat = models.CharField(max_length=10, null=True, blank=True)
@@ -139,6 +141,7 @@ class Applicant(models.Model):
     bank_account_number = models.CharField(max_length=20, null=True, blank=True)
     bank_pay_frequency = models.PositiveSmallIntegerField(choices=PAY_FREQUENCY_CHOICES, null=True, blank=True)
     bank_next_pay_date = models.DateField(null=True, blank=True)
+    no_dd = models.CharField(max_length=30, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
