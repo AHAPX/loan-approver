@@ -1,6 +1,7 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Applicant, Introducer, Template
+from .models import Applicant, Introducer, Template, Product
 from .consts import EMPLOYMENT_CHOICES
 
 
@@ -56,6 +57,15 @@ class TemplateSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'text', 'usefor')
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id', 'username', 'first_name', 'last_name', 'email', 'password',
+            'is_active', 'is_staff', 'is_superuser', 'user_permissions',
+        )
+
+
 class SettingSerializer(serializers.Serializer):
     age_max = serializers.IntegerField(required=False)
     age_min = serializers.IntegerField(required=False)
@@ -78,3 +88,15 @@ class SettingSerializer(serializers.Serializer):
             setattr(self.instance, field, self.validated_data.get(field, value))
         self.instance.save()
         return self.instance
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = (
+            'introducer', 'group', 'amount', 'term', 'annual_rate',
+            'annual_percentage_rate', 'payment', 'mask', 'interest',
+            'total_charge', 'total_payable', 'default_interest',
+            'daily_interest', 'min_score_tenant', 'min_in_debt',
+            'min_score_mtg', 'is_active',
+        )

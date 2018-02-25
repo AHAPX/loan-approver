@@ -1,7 +1,8 @@
 import logging
 
 from django.http import HttpResponse, JsonResponse, Http404
-from rest_framework import generics
+from django.contrib.auth.models import User
+from rest_framework import generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -12,10 +13,12 @@ from .consts import (
     RESULT_REJECT_CALL_CREDIT
 )
 from .convertors import ApplicantConvertor
-from .models import Applicant, Introducer, CallCredit, History, Template, Setting
+from .models import (
+    Applicant, Introducer, CallCredit, History, Template, Setting, Product
+)
 from .serializers import (
     SubmitSerializer, ApplicantSerializer, IntroducerSerializer,
-    TemplateSerializer, SettingSerializer
+    TemplateSerializer, SettingSerializer, UserSerializer, ProductSerializer
 )
 
 
@@ -93,34 +96,41 @@ class SubmitView(APIView):
 class ApplicantList(generics.ListAPIView):
     queryset = Applicant.objects.all()
     serializer_class = ApplicantSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class ApplicantDetail(generics.RetrieveUpdateAPIView):
     queryset = Applicant.objects.all()
     serializer_class = ApplicantSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class IntroducerList(generics.ListCreateAPIView):
     queryset = Introducer.objects.all()
     serializer_class = IntroducerSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class IntroducerDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Introducer.objects.all()
     serializer_class = IntroducerSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class TemplateList(generics.ListCreateAPIView):
     queryset = Template.objects.all()
     serializer_class = TemplateSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class TemplateDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Template.objects.all()
     serializer_class = TemplateSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class SettingView(APIView):
+    permission_classes = (permissions.IsAdminUser,)
     fields = (
         'age_max', 'age_min', 'employment_status', 'income_min',
         'loan_amount_min', 'loan_amount_max', 'employer', 'occupation',
@@ -141,3 +151,27 @@ class SettingView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+
+
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAdminUser,)
+
+
+class UserDetail(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAdminUser,)
+
+
+class ProductList(generics.ListCreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = (permissions.IsAdminUser,)
+
+
+class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = (permissions.IsAdminUser,)
