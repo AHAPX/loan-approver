@@ -188,9 +188,9 @@ class Setting(models.Model):
     income_min = models.FloatField(default=1000, blank=True)
     loan_amount_min = models.FloatField(default=500, blank=True)
     loan_amount_max = models.FloatField(default=2000, blank=True)
-    employer = models.BooleanField(default=True, blank=True)
-    occupation = models.BooleanField(default=True, blank=True)
-    postcode = models.BooleanField(default=True, blank=True)
+    employer = models.CharField(max_length=500, default='', blank=True)
+    occupation = models.CharField(max_length=500, default='', blank=True)
+    postcode = models.CharField(max_length=500, default='', blank=True)
 
     def __str__(self):
         return f'{self.name}'

@@ -8,7 +8,17 @@ from django.db import models
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from tm.models import Applicant, Introducer, Template, Setting
+from tm.models import Applicant, Introducer, Product, Template, Setting
+
+
+def smartdump(data):
+    result = {}
+    for key, value in data.items():
+        if isinstance(value, models.Model):
+            result[f'{key}'] = value.id
+        else:
+            result[key] = value
+    return json.dumps(result)
 
 
 class BaseViewTestMixin():
@@ -74,7 +84,7 @@ class MainTestsMixin(BaseViewTestMixin):
         self.assertEqual(len(resp.data), self._count)
         resp = self.client.post(
             f'{self.url}',
-            json.dumps(self.new_data),
+            smartdump(self.new_data),
             content_type='application/json'
         )
         resp = self.client.get(f'{self.url}')
@@ -94,7 +104,7 @@ class MainTestsMixin(BaseViewTestMixin):
             # edit record
             resp = self.client.put(
                 f'{self.url}{pk}/',
-                json.dumps(self.edit_data),
+                smartdump(self.edit_data),
                 content_type='application/json'
             )
             for key, value in self.edit_data.items():
@@ -166,9 +176,9 @@ class SettingTest(BaseViewTestMixin, TestCase):
             'income_min': 999,
             'loan_amount_min': 499,
             'loan_amount_max': 2399,
-            'employer': True,
-            'occupation': True,
-            'postcode': True,
+            'employer': 'badcompany',
+            'occupation': 'badoccupation',
+            'postcode': '12345',
         }
         setting = Setting.objects.create(is_active=True, **new_data)
         resp = self.client.get('/v1/settings/')
@@ -183,13 +193,13 @@ class SettingTest(BaseViewTestMixin, TestCase):
             'income_min': 500,
             'loan_amount_min': 1000,
             'loan_amount_max': 4000,
-            'employer': False,
-            'occupation': False,
-            'postcode': False,
+            'employer': 'badcompany,verybad',
+            'occupation': 'badoccupation,programmer',
+            'postcode': '12345,12456,15432',
         }
         resp = self.client.put(
             '/v1/settings/',
-            json.dumps(edit_data),
+            smartdump(edit_data),
             content_type='application/json'
         )
         resp = self.client.get('/v1/settings/')
@@ -253,3 +263,33 @@ class UserTest(MainTestsMixin, TestCase):
     }
     delete = False
     ignore_fields = ('user_permissions',)
+
+
+class ProductTest(MainTestsMixin, TestCase):
+    fields = (
+        'introducer', 'group', 'amount', 'term', 'annual_rate',
+        'annual_percentage_rate', 'payment', 'mask', 'interest', 'total_charge',
+        'total_payable', 'default_interest', 'daily_interest', 'min_score_tenant',
+        'min_in_debt', 'min_score_mtg', 'is_active',
+    )
+    model = Product
+    url = '/v1/products/'
+    new_data = 'product_new'
+    edit_data = 'product_edit'
+    ignore_fields = ('introducer',)
+
+    def setUp(self):
+        data = {
+            'auth_code': 'apikey1234',
+            'ip': '127.0.0.1',
+            'netmask': '255.255.255.0',
+            'name': 'test introducer',
+            'address': 'some address',
+            'website': 'http://test.com',
+            'phone': '0123456789',
+            'is_active': True,
+        }
+        introducer = Introducer.objects.create(**data)
+        self.new_data['introducer'] = introducer
+        self.edit_data['introducer'] = introducer.pk
+        super(ProductTest, self).setUp()

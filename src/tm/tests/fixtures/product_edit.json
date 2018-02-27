@@ -1,0 +1,18 @@
+{
+    "group": 2,
+    "amount": 3000,
+    "term": 3,
+    "annual_rate": 14,
+    "annual_percentage_rate": 9,
+    "payment": 130,
+    "mask": 3,
+    "interest": 5,
+    "total_charge": 3500,
+    "total_payable": 3750,
+    "default_interest": 700,
+    "daily_interest": 3,
+    "min_score_tenant": 2,
+    "min_in_debt": 12,
+    "min_score_mtg": 2,
+    "is_active": true
+}

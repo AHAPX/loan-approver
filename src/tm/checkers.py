@@ -29,6 +29,12 @@ def equal(value1, value2):
     return value1 == value2
 
 
+def not_in(value1, value2):
+    if isinstance(value2, str):
+        value2 = [x.strip().lower() for x in value2.split(',')]
+    return value1.lower() not in value2
+
+
 RULES_PRE = {
     'age_min': {
         'field': 'date_of_birth',
@@ -54,8 +60,8 @@ RULES_PRE = {
     },
     'employer': {
         'field': 'employer_name',
-        'format': bool,
-        'check': equal,
+        'format': str,
+        'check': not_in,
     },
     'employment_status': {
         'field': 'employment_status',
@@ -63,13 +69,13 @@ RULES_PRE = {
     },
     'occupation': {
         'field': 'occupation',
-        'format': bool,
-        'check': equal,
+        'format': str,
+        'check': not_in,
     },
     'postcode': {
         'field': 'addr_postcode',
-        'format': bool,
-        'check': equal,
+        'format': str,
+        'check': not_in,
     },
 }
 

@@ -2,7 +2,9 @@ from datetime import date, timedelta
 
 from django.test import TestCase
 
-from tm.checkers import get_age, gte, lte, equal, PreChecker, CallCreditChecker
+from tm.checkers import (
+    get_age, gte, lte, equal, not_in, PreChecker, CallCreditChecker
+)
 from tm.models import Setting
 
 
@@ -28,6 +30,12 @@ class MainTest(TestCase):
         self.assertFalse(equal(0, 1))
         self.assertFalse(equal(2, 1))
 
+    def test_not_in(self):
+        banned = 'one, three '
+        self.assertFalse(not_in('one', banned))
+        self.assertTrue(not_in('two', banned))
+        self.assertFalse(not_in('three', banned))
+
 
 class DummyApplicant():
     date_of_birth = None
@@ -46,7 +54,7 @@ class DummyApplicant():
 class CheckerTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        setting = Setting.objects.create(is_active=True)
+        cls.setting = Setting.objects.create(is_active=True)
 
     def test_pre_checker(self):
         # correct data
@@ -70,4 +78,20 @@ class CheckerTest(TestCase):
             'addr_postcode': '12 345',
         }
         expect = ['age_max', 'income_min', 'loan_amount_max', 'occupation']
+        self.assertEqual(PreChecker().check(DummyApplicant(**data)), expect)
+        # banned data
+        self.setting.employer = 'badcomp,verybadcomp'
+        self.setting.occupation = 'programmer'
+        self.setting.postcode = '12345,43215'
+        self.setting.save()
+        data = {
+            'date_of_birth': date.today() - timedelta(365*30),
+            'income': 2500,
+            'loan_amount': 1000,
+            'employer_name': 'verybadcomp',
+            'occupation': 'designer',
+            'employment_status': 1,
+            'addr_postcode': '43215',
+        }
+        expect = ['employer', 'postcode']
         self.assertEqual(PreChecker().check(DummyApplicant(**data)), expect)

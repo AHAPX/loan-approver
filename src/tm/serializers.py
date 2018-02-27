@@ -73,9 +73,9 @@ class SettingSerializer(serializers.Serializer):
     income_min = serializers.FloatField(required=False)
     loan_amount_min = serializers.FloatField(required=False)
     loan_amount_max = serializers.FloatField(required=False)
-    employer = serializers.BooleanField(required=False)
-    occupation = serializers.BooleanField(required=False)
-    postcode = serializers.BooleanField(required=False)
+    employer = serializers.CharField(required=False)
+    occupation = serializers.CharField(required=False)
+    postcode = serializers.CharField(required=False)
 
     def save(self):
         fields = (
