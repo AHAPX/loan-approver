@@ -132,6 +132,9 @@ REST_FRAMEWORK = {
 }
 
 CALL_CREDIT = {}
+SMS_USERNAME = 'username'
+SMS_PASSWORD = 'password'
+
 
 try:
     from .local import *
