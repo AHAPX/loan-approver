@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.documentation import include_docs_urls
 
 from . import views
 
@@ -34,4 +35,5 @@ urlpatterns = [
     path('v1/users/<int:pk>/', views.UserDetail.as_view()),
     path('v1/settings/', views.SettingView.as_view(), name='setting'),
     path('submit/', views.SubmitView.as_view(), name='submit'),
+    path('docs/', include_docs_urls(title='TMA API')),
 ]
