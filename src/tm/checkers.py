@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 import logging
 import requests
 
@@ -33,6 +33,31 @@ def not_in(value1, value2):
     if isinstance(value2, str):
         value2 = [x.strip().lower() for x in value2.split(',')]
     return value1.lower() not in value2
+
+
+def check_flag(flag, checker):
+    return not checker or not flag
+
+
+def check_mortgage(accs, *args):
+    for acc in accs.get('acc', []):
+        details = acc.get('accdetails', {})
+        if int(details.get('accgroupid', 0)) == 2 and details.get('status') == 'Q':
+            return False
+    return True
+
+
+def check_acc_for_years(accs, years):
+    last_date = datetime.today() - timedelta(365 * years)
+    for acc in accs.get('acc', []):
+        details = acc.get('accdetails', {})
+        try:
+            start_date = datetime.strptime(details.get('accstartdate'), '%Y-%m-%d')
+        except:
+            continue
+        if start_date > last_date:
+            return True
+    return False
 
 
 RULES_PRE = {
@@ -79,44 +104,28 @@ RULES_PRE = {
     },
 }
 
-# TODO: not correct rules, just for test, need to be change
 RULES_CALL_CREDIT = {
     'credit_score_min': {
         'field': 'credit_score',
         'check': gte,
     },
-    'credit_score_with_mortgage_min': {
-        'field': 'credit_score_with_mortgage',
-        'check': gte,
-    },
     'indebt_min': {
-        'field': 'indebt_min',
+        'field': 'indebt',
         'check': gte,
     },
     'delinquent_mortgage': {
-        'field': 'delinquent_mortgage',
-        'format': bool,
-        'check': equal,
+        'field': 'accs',
+        'check': check_mortgage,
     },
     'active_bunkruptcy': {
         'field': 'active_bunkruptcy',
-        'format': bool,
-        'check': equal,
+        'check': check_flag,
     },
-    'debt_in_income_min': {
-        'field': 'debt_in_income_min',
-        'check': gte,
-    },
-    'debt_in_income_max': {
-        'field': 'debt_in_income_max',
-        'check': lte,
-    },
-    'last_credit': {
-        'field': 'last_credit',
-        'check': gte,
+    'acc_for_years': {
+        'field': 'accs',
+        'check': check_acc_for_years,
     },
 }
-
 
 
 class BaseChecker():
@@ -127,8 +136,8 @@ class BaseChecker():
         for key, rule in self.rules.items():
             setting = Setting.get_setting()
             setting_value = getattr(setting, key, None)
-            if setting_value is None:
-                continue
+#            if setting_value is None:
+#                continue
             field = rule['field']
             value = getattr(item, field, None)
             if value == None:

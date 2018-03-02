@@ -121,13 +121,11 @@ SUBMIT_FIELDS = {
     'reference_id': 'affref',
 }
 
-
 CALL_CREDIT_FIELDS = {
     'credit_score': BSBAndCreditField('creditscores.creditscore.score', get_text, int),
-    'indebt_min': BSBAndCreditField('summary.indebt.totallimitsrevolve', float),
-    'delinquent_mortgage': BSBAndCreditField('summary.share.totaldelinqs12months', int),
-    'debt_in_income_min': AffordabilityField('debtsummary.turnoverpercentiles.ratioincomechg12', float),
-    'debt_in_income_max': AffordabilityField('debtsummary.turnoverpercentiles.ratioincomechg3', float),
+    'indebt': BSBAndCreditField('summary.indebt.totallimitsrevolve', float),
+    'accs': BSBAndCreditField('accs'),
+    'active_bunkruptcy': BSBAndCreditField('summary.bais.currentlyinsolvent', int, bool),
 }
 
 

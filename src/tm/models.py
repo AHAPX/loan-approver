@@ -157,13 +157,9 @@ class CallCredit(models.Model):
 
     # QS report
     credit_score = models.IntegerField(null=True)
-    credit_score_with_mortgage = models.IntegerField(null=True)
-    indebt_min = models.FloatField(null=True)
-    delinquent_mortgage = models.BooleanField(default=False)
+    indebt = models.FloatField(null=True)
     active_bunkruptcy = models.BooleanField(default=False)
-    debt_in_income_min = models.FloatField(null=True)
-    debt_in_income_max = models.FloatField(null=True)
-    last_credit = models.DateTimeField(null=True)
+    accs = JSONField(null=True)
 
     # affordability
     confidence_factor = models.FloatField(null=True)
@@ -191,6 +187,11 @@ class Setting(models.Model):
     employer = models.CharField(max_length=500, default='', blank=True)
     occupation = models.CharField(max_length=500, default='', blank=True)
     postcode = models.CharField(max_length=500, default='', blank=True)
+
+    credit_score_min = models.IntegerField(default=0, blank=True)
+    indebt_min = models.FloatField(default=0, blank=True)
+    active_bunkruptcy = models.BooleanField(default=True)
+    acc_for_years = models.IntegerField(default=3, blank=True)
 
     def __str__(self):
         return f'{self.name}'

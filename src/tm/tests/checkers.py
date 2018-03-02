@@ -3,9 +3,14 @@ from datetime import date, timedelta
 from django.test import TestCase
 
 from tm.checkers import (
-    get_age, gte, lte, equal, not_in, PreChecker, CallCreditChecker
+    get_age, gte, lte, equal, not_in, check_flag, check_mortgage,
+    check_acc_for_years, PreChecker, CallCreditChecker
 )
 from tm.models import Setting
+
+
+def date_minus(days):
+    return (date.today() - timedelta(days)).strftime('%Y-%m-%d')
 
 
 class MainTest(TestCase):
@@ -36,16 +41,59 @@ class MainTest(TestCase):
         self.assertTrue(not_in('two', banned))
         self.assertFalse(not_in('three', banned))
 
+    def test_check_flag(self):
+        self.assertTrue(check_flag(True, False))
+        self.assertTrue(check_flag(False, False))
+        self.assertTrue(check_flag(False, True))
+        self.assertFalse(check_flag(True, True))
 
-class DummyApplicant():
-    date_of_birth = None
-    income = None
-    loan_amount = None
-    employer_name = None
-    employment_status = None
-    occupation = None
-    addr_postcode = None
+    def test_check_mortgage(self):
+        data = {
+            'acc': [{
+                'accdetails': {
+                    'accgroupid': 2,
+                }
+            }, {
+                'accdetails': {
+                    'accgroupid': 2,
+                    'status': 'Q',
+                },
+            }]
+        }
+        self.assertFalse(check_mortgage(data))
+        data = {
+            'acc': [{
+                'accdetails': {
+                    'accgroupid': 2,
+                }
+            }, {
+                'accdetails': {
+                    'status': 'Q',
+                },
+            }]
+        }
+        self.assertTrue(check_mortgage(data))
 
+    def test_check_acc_for_years(self):
+        data = {
+            'acc': [{
+                'accdetails': {'accstartdate': date_minus(365 * 3)},
+            }, {
+                'accdetails': {'accstartdate': date_minus(30 * 36)},
+            }]
+        }
+        self.assertFalse(check_acc_for_years(data, 2))
+        data = {
+            'acc': [{
+                'accdetails': {'accstartdate': date_minus(365 * 3)},
+            }, {
+                'accdetails': {'accstartdate': date_minus(30 * 20)},
+            }]
+        }
+        self.assertTrue(check_acc_for_years(data, 2))
+
+
+class Dummy():
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -67,7 +115,7 @@ class CheckerTest(TestCase):
             'occupation': 'ceo',
             'addr_postcode': '12 345',
         }
-        self.assertFalse(PreChecker().check(DummyApplicant(**data)))
+        self.assertFalse(PreChecker().check(Dummy(**data)))
         # wrong data
         data = {
             'date_of_birth': date.today() - timedelta(365*70),
@@ -78,7 +126,8 @@ class CheckerTest(TestCase):
             'addr_postcode': '12 345',
         }
         expect = ['age_max', 'income_min', 'loan_amount_max', 'occupation']
-        self.assertEqual(PreChecker().check(DummyApplicant(**data)), expect)
+        self.assertEqual(PreChecker().check(Dummy(**data)), expect)
+
         # banned data
         self.setting.employer = 'badcomp,verybadcomp'
         self.setting.occupation = 'programmer'
@@ -94,4 +143,52 @@ class CheckerTest(TestCase):
             'addr_postcode': '43215',
         }
         expect = ['employer', 'postcode']
-        self.assertEqual(PreChecker().check(DummyApplicant(**data)), expect)
+        self.assertEqual(PreChecker().check(Dummy(**data)), expect)
+
+    def test_call_credit(self):
+        # wrong data and settings
+        self.setting.credit_score_min = 100
+        self.setting.indebt_min = 2000
+        self.setting.save()
+        data = {
+            'credit_score': 50,
+            'indebt': 500,
+            'active_bunkruptcy': True,
+            'accs': {
+                'acc': [{
+                    'accdetails': {
+                        'accgroupid': '2',
+                        'status': 'Q',
+                        'accstartdate': date_minus(365 * 3 + 60),
+                    },
+                }],
+            },
+        }
+        expect = [
+            'credit_score_min', 'indebt_min', 'delinquent_mortgage',
+            'active_bunkruptcy', 'acc_for_years'
+        ]
+        self.assertEqual(CallCreditChecker().check(Dummy(**data)), expect)
+
+        # correct data and settings
+        self.setting.active_bunkruptcy = False
+        self.setting.save()
+        data = {
+            'credit_score': 150,
+            'indebt': 3500,
+            'active_bunkruptcy': True,
+            'accs': {
+                'acc': [{
+                    'accdetails': {
+                        'accgroupid': '2',
+                        'accstartdate': date_minus(365 * 3),
+                    },
+                }, {
+                    'accdetails': {
+                        'status': 'Q',
+                        'accstartdate': date_minus(365 * 2),
+                    },
+                }],
+            },
+        }
+        self.assertFalse(CallCreditChecker().check(Dummy(**data)))

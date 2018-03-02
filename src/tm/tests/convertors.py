@@ -187,23 +187,47 @@ class ConvertorTest(TestCase):
                         }}},
                         'summary': {
                             'indebt': {'totallimitsrevolve': '10'},
-                            'share': {'totaldelinqs12months': '22'},
+                            'bais': {'currentlyinsolvent': '1'},
+                        },
+                        'accs': {
+                            'acc': [{
+                                'accgroupid': '4',
+                                'accstartdate': '2006-06-30',
+                                'acctypecode': 'TM',
+                                'balance': '7000',
+                                'currencycode': 'GBP',
+                                'dateupdated': '2018-02-09',
+                                'joint': '0',
+                                'openbalance': '0',
+                                'paystartdate': '1999-07-01',
+                                'regpayment': '500',
+                                'repayfreqcode': 'M',
+                                'status': 'N',
+                            }],
                         },
                     }}}}},
-                'AffordabilityReport2': {'AffordabilityReport2Response': {'Response': {'results': {
-                    'debtsummary': {'turnoverpercentiles': {
-                        'ratioincomechg12': '111',
-                        'ratioincomechg3': '234',
-                    }}
-                }}}},
             }}}}},
         }
         expect = {
             'credit_score': 35,
-            'indebt_min': 10.0,
-            'delinquent_mortgage': 22,
-            'debt_in_income_min': 111,
-            'debt_in_income_max': 234,
+            'indebt': 10.0,
+            'accs': {
+                'acc': [{
+                    'accgroupid': '4',
+                    'accstartdate': '2006-06-30',
+                    'acctypecode': 'TM',
+                    'balance': '7000',
+                    'currencycode': 'GBP',
+                    'dateupdated': '2018-02-09',
+                    'joint': '0',
+                    'openbalance': '0',
+                    'paystartdate': '1999-07-01',
+                    'regpayment': '500',
+                    'repayfreqcode': 'M',
+                    'status': 'N',
+                }],
+            },
+            'active_bunkruptcy': True,
         }
         value = CallCreditConvertor().convert(data)
         self.assertEqual(value, expect)
