@@ -1,7 +1,6 @@
-import requests
-
-from django.template.loader import render_to_string
 from django.conf import settings
+from django.template.loader import render_to_string
+import requests
 import xmltodict
 
 

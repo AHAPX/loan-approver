@@ -1,0 +1,33 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soap:Body>
+    <createUrlWidget xmlns="http://api.echosign">
+      <apiKey>{{ api_key }}</apiKey>
+      <senderInfo xmlns:ns4="http://dto14.api.echosign" xmlns:ns3="http://dto9.api.echosign" xmlns:ns2="http://dto.api.echosign" xsi:nil="true" />
+      <ns4:widgetInfo xmlns:ns4="http://api.echosign" xmlns:ns3="http://dto9.api.echosign" xmlns:ns2="http://dto.api.echosign" xmlns="http://dto8.api.echosign">
+        <callbackInfo xsi:nil="true" />
+        <fileInfos>
+          <ns2:FileInfo>
+            <ns2:file>{{ file }}</ns2:file>
+            <ns2:fileName>{{ filename }}</ns2:fileName>
+            <ns2:formKey xsi:nil="true" />
+            <ns2:libraryDocumentKey xsi:nil="true" />
+            <ns2:libraryDocumentName xsi:nil="true" />
+            <ns2:mimeType xsi:nil="true" />
+            <ns2:url xsi:nil="true" />
+          </ns2:FileInfo>
+        </fileInfos>
+        <locale xsi:nil="true" />
+        <mergeFieldInfo xsi:nil="true" />
+        <name>Loan Application</name>
+        <securityOptions xsi:nil="true" />
+        <signatureFlow>SENDER_SIGNS_LAST</signatureFlow>
+        <widgetAuthFailureInfo xsi:nil="true" />
+        <widgetCompletionInfo>
+          <url>{{ redirect }}</url>
+          <deframe>true</deframe>
+          <delay>3</delay>
+        </widgetCompletionInfo>
+      </ns4:widgetInfo>
+    </createUrlWidget>
+  </soap:Body>
+</soap:Envelope>
