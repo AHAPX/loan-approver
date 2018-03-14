@@ -8,6 +8,7 @@ from .consts import (
     RESULT_CHOICES
 )
 from .convertors import CallCreditConvertor
+from .helpers import gen_token
 
 
 class Introducer(models.Model):
@@ -65,6 +66,7 @@ class Product(models.Model):
 class Applicant(models.Model):
     introducer = models.ForeignKey(Introducer, related_name='applicants', on_delete=models.CASCADE)
     reference_id = models.CharField(max_length=64, null=True, blank=True)
+    access_token = models.CharField(max_length=32, default=gen_token)
 
     # personal
     title = models.PositiveSmallIntegerField(choices=TITLE_CHOICES)

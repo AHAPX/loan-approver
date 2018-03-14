@@ -1,11 +1,14 @@
 import logging
 
-from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth.models import User
+from django.http import HttpResponse, JsonResponse, Http404
+from django.shortcuts import redirect
+from django.urls import reverse
 from rest_framework import generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from .cache import Cache
 from .callcredit import search_request
 from .checkers import PreChecker, CallCreditChecker
 from .consts import (
@@ -13,6 +16,7 @@ from .consts import (
     RESULT_REJECT_CALL_CREDIT
 )
 from .convertors import ApplicantConvertor
+from .helpers import gen_token, get_customer_products
 from .models import (
     Applicant, Introducer, CallCredit, History, Template, Setting, Product
 )
@@ -20,6 +24,7 @@ from .serializers import (
     SubmitSerializer, ApplicantSerializer, IntroducerSerializer,
     TemplateSerializer, SettingSerializer, UserSerializer, ProductSerializer
 )
+from .sms import send_sms
 
 
 logger = logging.getLogger(__name__)
@@ -77,12 +82,17 @@ class SubmitView(APIView):
                 return Response({
                     'Result': 'Rejected',
                     'CustomerID': introducer.id,
+                    'errors': errors,
                 }, status=400)
             History.add(applicant, RESULT_SUCCESS, call_credit=cc)
+            token = gen_token()
+            Cache().set(token, applicant.id)
+            redirect_url = get_customer_products(token)
+            send_sms(applicant.phone_mobile, redirect_url)
             return Response({
                 'Result': 'Accepted',
                 'CustomerID': introducer.id,
-                'RedirectURL': '#TODO',
+                'RedirectURL': redirect_url,
                 'Commission': '#TODO',
                 'Amount': '#TODO',
             })
@@ -175,3 +185,29 @@ class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = (permissions.IsAdminUser,)
+
+
+class CustomerProduct(APIView):
+    def get(self, request):
+        code = request.GET.get('code')
+        try:
+            applicant = Applicant.objects.get(access_token=code)
+        except Applicant.DoesNotExist:
+            raise Http404
+        return Response({
+            'applicant_id': applicant.id,
+        })
+
+
+def customer_main(request, token):
+    cache = Cache()
+    app_id = cache.get(token)
+    try:
+        applicant = Applicant.objects.get(id=app_id)
+        cache.delete(token)
+    except Applicant.DoesNotExist:
+        raise Http404
+    return redirect('{}?code={}'.format(
+        reverse('customer_products'),
+        applicant.access_token)
+    )

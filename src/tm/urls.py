@@ -22,6 +22,7 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('a/<token>', views.customer_main, name='customer_main'),
     path('v1/', include('rest_framework.urls')),
     path('v1/applicants/', views.ApplicantList.as_view()),
     path('v1/applicants/<int:pk>/', views.ApplicantDetail.as_view()),
@@ -34,6 +35,7 @@ urlpatterns = [
     path('v1/users/', views.UserList.as_view()),
     path('v1/users/<int:pk>/', views.UserDetail.as_view()),
     path('v1/settings/', views.SettingView.as_view(), name='setting'),
+    path('v1/customer/products/', views.CustomerProduct.as_view(), name='customer_products'),
     path('submit/', views.SubmitView.as_view(), name='submit'),
     path('docs/', include_docs_urls(title='TMA API')),
 ]

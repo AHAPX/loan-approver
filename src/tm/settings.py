@@ -15,6 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+MAIN_URL = 'http://188.166.180.46/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -132,8 +133,17 @@ REST_FRAMEWORK = {
 }
 
 CALL_CREDIT = {}
-SMS_USERNAME = 'username'
-SMS_PASSWORD = 'password'
+
+SMS = {
+    'username': 'username',
+    'password': 'password',
+}
+
+REDIS = {
+    'host': 'redis',
+    'port': 6379,
+    'db': 0,
+}
 
 
 try:
