@@ -42,9 +42,15 @@ class HistoryAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
 
 
+class TemplateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'usefor',)
+    ordering = ('name',)
+
+
 admin.site.register(Introducer, IntroducerAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Applicant, ApplicantAdmin)
 admin.site.register(Setting, SettingAdmin)
 admin.site.register(CallCredit, CallCreditAdmin)
 admin.site.register(History, HistoryAdmin)
+admin.site.register(Template, TemplateAdmin)

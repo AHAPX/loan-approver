@@ -13,5 +13,9 @@ def gen_token(length=8):
     return ''.join([random.choice(SYMBOLS) for i in range(length)])
 
 
+def get_full_url(url):
+    return urljoin(settings.MAIN_URL, url)
+
+
 def get_customer_products(token):
-    return urljoin(settings.MAIN_URL, reverse('customer_main', kwargs={'token': token}))
+    return get_full_url(reverse('customer_main', kwargs={'token': token}))

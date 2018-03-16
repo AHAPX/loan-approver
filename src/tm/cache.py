@@ -1,8 +1,9 @@
 import pickle
 
+from django.conf import settings
 from redis import StrictRedis
 
-from django.conf import settings
+from tm.helpers import gen_token
 
 
 class Cache():
@@ -29,3 +30,8 @@ class Cache():
 
     def delete(self, key):
         self.redis.delete(key)
+
+    def get_token(self, data):
+        token = gen_token()
+        self.set(token, data)
+        return token

@@ -6,13 +6,13 @@ import requests
 import xmltodict
 
 
-def create_url_widget(filename, https, site, lrn):
+def create_url_widget(filename, url):
     body = open(filename).read().encode()
     context = {
         'api_key': settings.ECHOSIGN_API_KEY,
         'file': base64.b64encode(body),
         'filename': filename,
-        'redirect': f'http{"s" if https else ""}://{site}/s/{lrn}',
+        'redirect': url,
     }
     body = render_to_string('sign_widget.xml', context)
     response = requests.post(
