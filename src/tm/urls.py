@@ -39,6 +39,11 @@ urlpatterns = [
     path('v1/customer/step1/', customer.Step1.as_view(), name='customer_step1'),
     path('v1/customer/step2/', customer.Step2.as_view(), name='customer_step2'),
     path('v1/customer/step3/', customer.Step3.as_view(), name='customer_step3'),
+    path('v1/customer/step4/', customer.Step4.as_view(), name='customer_step4'),
+    path('v1/customer/step5/', customer.Step5.as_view(), name='customer_step5'),
+    path('v1/customer/step6/', customer.Step6.as_view(), name='customer_step6'),
+    path('v1/customer/step7/', customer.Step7.as_view(), name='customer_step7'),
+    path('v1/customer/step8/', customer.Step8.as_view(), name='customer_step8'),
 # main
     path('submit/', SubmitView.as_view(), name='submit'),
     path('admin/', admin.site.urls),

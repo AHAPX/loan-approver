@@ -13,6 +13,10 @@ def gen_token(length=8):
     return ''.join([random.choice(SYMBOLS) for i in range(length)])
 
 
+def gen_pin(length=4):
+    return ''.join([random.choice(string.digits) for i in range(length)])
+
+
 def get_full_url(url):
     return urljoin(settings.MAIN_URL, url)
 

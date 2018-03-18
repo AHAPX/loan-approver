@@ -77,6 +77,7 @@ class Applicant(models.Model):
     sex = models.CharField(max_length=1, choices=SEX_CHOICES, null=True, blank=True)
     phone_landline = models.CharField(max_length=12, null=True, blank=True)
     phone_mobile = models.CharField(max_length=12)
+    is_phone_verified = models.BooleanField(default=False)
     email = models.EmailField()
     dependents = models.PositiveSmallIntegerField(null=True, blank=True)
 
@@ -153,9 +154,17 @@ class Applicant(models.Model):
         return f'{self.first_name} {self.last_name}'
 
 
+class LoanOutstand(models.Model):
+    applicant = models.ForeignKey(Applicant, related_name='loans', on_delete=models.CASCADE)
+    lender = models.CharField(max_length=50)
+    amount = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class CallCredit(models.Model):
-    # full response
     applicant = models.ForeignKey(Applicant, related_name='callcredits', on_delete=models.CASCADE)
+
+    # full response
     data = JSONField()
 
     # QS report

@@ -3,7 +3,7 @@ import pickle
 from django.conf import settings
 from redis import StrictRedis
 
-from tm.helpers import gen_token
+from tm.helpers import gen_token, gen_pin
 
 
 class Cache():
@@ -21,8 +21,10 @@ class Cache():
         else:
             self.redis.set(key, _data)
 
-    def get(self, key):
+    def get(self, key, delete=False):
         value = self.redis.get(key)
+        if delete:
+            self.delete(key)
         try:
             return pickle.loads(value)
         except:
@@ -35,3 +37,8 @@ class Cache():
         token = gen_token()
         self.set(token, data)
         return token
+
+    def get_pin(self, data):
+        pin = gen_pin()
+        self.set(pin, data)
+        return pin

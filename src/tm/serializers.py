@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from .models import Applicant, Introducer, Template, Product
-from .consts import EMPLOYMENT_CHOICES
+from .consts import PAY_FREQUENCY_CHOICES, LIVE_WITH_CHOICES
 
 
 class SubmitSerializer(serializers.ModelSerializer):
@@ -100,3 +100,44 @@ class ProductSerializer(serializers.ModelSerializer):
             'daily_interest', 'min_score_tenant', 'min_in_debt',
             'min_score_mtg', 'is_active',
         )
+
+
+class CustomerStep3(serializers.Serializer):
+    account_number = serializers.CharField(max_length=50)
+    sort_code = serializers.CharField(max_length=6)
+    pay_frequency = serializers.ChoiceField(choices=PAY_FREQUENCY_CHOICES)
+
+
+class CustomerStep4Loan(serializers.Serializer):
+    lender = serializers.CharField(max_length=50)
+    amount = serializers.FloatField()
+
+
+class CustomerStep4(serializers.Serializer):
+    rent_mortgage = serializers.FloatField()
+    live_with = serializers.ChoiceField(choices=LIVE_WITH_CHOICES)
+    children = serializers.IntegerField()
+    child_care_costs = serializers.FloatField()
+    cars = serializers.IntegerField()
+    loan_purpose = serializers.CharField()
+    loans = serializers.ListField(child=CustomerStep4Loan())
+
+
+class CustomerStep5(serializers.Serializer):
+    job_title = serializers.CharField(max_length=50)
+    employer_name = serializers.CharField(max_length=100)
+    employer_address = serializers.CharField(max_length=100)
+    nin = serializers.CharField(max_length=12, required=False)
+
+
+class CustomerStep6(serializers.Serializer):
+    partner_income = serializers.FloatField()
+    partner_contrib = serializers.FloatField()
+
+
+class CustomerStep7(serializers.Serializer):
+    phone_mobile = serializers.CharField(max_length=12)
+
+
+class CustomerStep8(serializers.Serializer):
+    pin = serializers.CharField(max_length=12)
