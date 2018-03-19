@@ -3,14 +3,15 @@ import logging
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import redirect
+from django.template import Template, Context
 from django.urls import reverse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from tm.cache import Cache
 from tm import consts
-from tm.helpers import get_full_url
-from tm.models import Applicant, Product, Template, LoanOutstand
+from tm.helpers import get_full_url, save_document, get_template, gen_reference_num
+from tm.models import Applicant, Product, LoanOutstand
 from tm.serializers import (
     CustomerStep3, CustomerStep4, CustomerStep5, CustomerStep6, CustomerStep7,
     CustomerStep8
@@ -23,8 +24,6 @@ logger = logging.getLogger(__name__)
 
 
 class BaseCustomerStep(APIView):
-    template = None
-
     def get_applicant(self, request):
         code = request.GET.get('code')
         try:
@@ -32,19 +31,9 @@ class BaseCustomerStep(APIView):
         except Applicant.DoesNotExist:
             raise Http404
 
-    def get_template(self):
-        if self.template:
-            logger.warning(self.template)
-            try:
-                return Template.objects.get(usefor=self.template).text
-            except:
-                pass
-        return ''
-
     def response(self, step, data={}):
         return Response({
             'step': step,
-            'template': self.get_template(),
             'data': data,
         })
 
@@ -53,8 +42,6 @@ class BaseCustomerStep(APIView):
 
 
 class Step1(BaseCustomerStep):
-    template = consts.LOAN_AGREEMENT
-
     def get(self, request):
         applicant = self.get_applicant(request)
         products = {}
@@ -82,28 +69,40 @@ class Step1(BaseCustomerStep):
             'term': product.term,
             'monthly': product.annual_rate,
             'loan_reference': 'TODO',
+            'reference_number': applicant.reference_number,
         }})
 
 
 class Step2(BaseCustomerStep):
+    def get_template_text(self, applicant):
+        return Template(get_template(consts.LOAN_AGREEMENT)).render(Context({
+            'applicant': applicant,
+            'product': applicant.product,
+            'introducer': applicant.introducer,
+        }))
+
     def get(self, request):
         applicant = self.get_applicant(request)
         if not applicant.product:
             return self.error(['product not choosen'])
-        return self.response(2, {'product': {
-            'amount': applicant.product.amount,
-            'term': applicant.product.term,
-            'monthly': applicant.product.annual_rate,
-            'loan_reference': 'TODO',
-        }})
+        return self.response(2, {
+            'product': {
+                'amount': applicant.product.amount,
+                'term': applicant.product.term,
+                'monthly': applicant.product.annual_rate,
+                'loan_reference': 'TODO',
+                'reference_number': applicant.reference_number,
+            },
+            'template': self.get_template_text(applicant),
+        })
 
     def post(self, request):
         applicant = self.get_applicant(request)
-        # TODO: generate doc
-        filename = '/tmp/testdoc.txt'
-        open(filename, 'w').write('test test sign and go')
+        text = self.get_template_text(applicant)
+        filename = save_document(text)
         token = Cache().get_token(applicant.id)
-        url = create_url_widget(filename, get_full_url(reverse('customer_signature', kwargs={'token': token})))
+        back_url = get_full_url(reverse('customer_signature', kwargs={'token': token}))
+        url = create_url_widget(filename, back_url)#, encoding='iso-8859-15')
         return self.response(2, {'redirect_url': url})
 
 
@@ -118,6 +117,7 @@ class Step3(BaseCustomerStep):
             'account_number': applicant.bank_account_number,
             'sort_code': applicant.bank_sort_code,
             'pay_frequency': applicant.bank_pay_frequency,
+            'reference_number': applicant.reference_number,
         }}
 
     def get(self, request):
@@ -141,6 +141,7 @@ class Step3(BaseCustomerStep):
 class Step4(BaseCustomerStep):
     def get_data(self, applicant):
         return {
+            'reference_number': applicant.reference_number,
             'rent_mortgage': applicant.rent_mortgage,
             'live_with': applicant.live_with,
             'children': applicant.children,
@@ -183,6 +184,7 @@ class Step4(BaseCustomerStep):
 class Step5(BaseCustomerStep):
     def get_data(self, applicant):
         return {
+            'reference_number': applicant.reference_number,
             'job_title': applicant.job_title,
             'employer_name': applicant.employer_name,
             'employer_address': applicant.employer_address,
@@ -209,6 +211,7 @@ class Step5(BaseCustomerStep):
 class Step6(BaseCustomerStep):
     def get_data(self, applicant):
         return {
+            'reference_number': applicant.reference_number,
             'partner_income': applicant.partner_income,
             'partner_contrib': applicant.partner_contrib,
         }
@@ -231,6 +234,7 @@ class Step6(BaseCustomerStep):
 class Step7(BaseCustomerStep):
     def get_data(self, applicant):
         return {
+            'reference_number': applicant.reference_number,
             'phone_mobile': applicant.phone_mobile,
         }
 
@@ -253,6 +257,7 @@ class Step7(BaseCustomerStep):
 class Step8(BaseCustomerStep):
     def get_data(self, applicant):
         return {
+            'reference_number': applicant.reference_number,
             'phone_mobile': applicant.phone_mobile,
         }
 

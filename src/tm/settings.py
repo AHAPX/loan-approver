@@ -146,6 +146,8 @@ REDIS = {
 }
 
 
+DOCUMENT_DIR = '/documents/'
+
 try:
     from .local import *
 except:
