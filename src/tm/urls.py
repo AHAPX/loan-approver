@@ -36,6 +36,7 @@ urlpatterns = [
 # customer steps
     path('a/<token>', customer.main, name='customer_main'),
     path('sign/<token>', customer.signature, name='customer_signature'),
+    path('v1/customer/data/', customer.MainData.as_view(), name='customer_data'),
     path('v1/customer/step1/', customer.Step1.as_view(), name='customer_step1'),
     path('v1/customer/step2/', customer.Step2.as_view(), name='customer_step2'),
     path('v1/customer/step3/', customer.Step3.as_view(), name='customer_step3'),

@@ -32,13 +32,21 @@ class BaseCustomerStep(APIView):
             raise Http404
 
     def response(self, step, data={}):
-        return Response({
-            'step': step,
-            'data': data,
-        })
+        return Response(data)
 
     def error(self, errors):
-        return Response({'errors': errors})
+        return Response({'errors': errors}, status=400)
+
+
+class MainData(BaseCustomerStep):
+    def get(self, request):
+        applicant = self.get_applicant(request)
+        footer = Template(get_template(consts.FOOTER_CUSTOMER)).render(Context({}))
+        return self.response(1, {
+            'footer_customer': footer,
+            'first_name': applicant.first_name,
+            'last_name': applicant.first_name,
+        })
 
 
 class Step1(BaseCustomerStep):
@@ -52,9 +60,12 @@ class Step1(BaseCustomerStep):
             products[prod.amount].append({
                 'id': prod.id,
                 'term': prod.term,
-                'annual_rate': prod.annual_rate,
+                'monthly': prod.annual_rate,
             })
-        return self.response(1, {'products': products})
+        return self.response(1, {
+            'products': products,
+            'reference_number': applicant.reference_number,
+        })
 
     def post(self, request):
         applicant = self.get_applicant(request)
@@ -64,13 +75,14 @@ class Step1(BaseCustomerStep):
             raise Http404
         applicant.product = product
         applicant.save()
-        return self.response(2, {'product': {
-            'amount': product.amount,
-            'term': product.term,
-            'monthly': product.annual_rate,
-            'loan_reference': 'TODO',
+        return self.response(2, {
+            'product': {
+                'amount': product.amount,
+                'term': product.term,
+                'monthly': product.annual_rate,
+            },
             'reference_number': applicant.reference_number,
-        }})
+        })
 
 
 class Step2(BaseCustomerStep):
@@ -90,9 +102,8 @@ class Step2(BaseCustomerStep):
                 'amount': applicant.product.amount,
                 'term': applicant.product.term,
                 'monthly': applicant.product.annual_rate,
-                'loan_reference': 'TODO',
-                'reference_number': applicant.reference_number,
             },
+            'reference_number': applicant.reference_number,
             'template': self.get_template_text(applicant),
         })
 
@@ -109,16 +120,15 @@ class Step2(BaseCustomerStep):
 class Step3(BaseCustomerStep):
 
     def get_data(self, applicant):
-        return {'product': {
+        return {
             'amount': applicant.product.amount,
             'term': applicant.product.term,
             'monthly': applicant.product.annual_rate,
-            'loan_reference': 'TODO',
             'account_number': applicant.bank_account_number,
             'sort_code': applicant.bank_sort_code,
             'pay_frequency': applicant.bank_pay_frequency,
             'reference_number': applicant.reference_number,
-        }}
+        }
 
     def get(self, request):
         applicant = self.get_applicant(request)
@@ -214,6 +224,7 @@ class Step6(BaseCustomerStep):
             'reference_number': applicant.reference_number,
             'partner_income': applicant.partner_income,
             'partner_contrib': applicant.partner_contrib,
+            'required': applicant.live_with == 3,
         }
 
     def get(self, request):

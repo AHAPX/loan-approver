@@ -127,7 +127,7 @@ class CustomerStep5(serializers.Serializer):
     job_title = serializers.CharField(max_length=50)
     employer_name = serializers.CharField(max_length=100)
     employer_address = serializers.CharField(max_length=100)
-    nin = serializers.CharField(max_length=12, required=False)
+    nin = serializers.CharField(max_length=12, required=False, allow_blank=True)
 
 
 class CustomerStep6(serializers.Serializer):

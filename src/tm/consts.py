@@ -20,6 +20,7 @@ AGREEMENT_SIGNED = 16
 WHEN_DECLINED = 17
 WHEN_FUNDED = 18
 WHEN_SIGNED_OFF = 19
+FOOTER_CUSTOMER = 20
 
 
 class STATES(Enum):
@@ -46,6 +47,7 @@ TEMPLATES_CHOICES = (
     (WHEN_DECLINED, 'SMS: When declined by underwriter'),
     (WHEN_FUNDED, 'SMS: When funded'),
     (WHEN_SIGNED_OFF, 'SMS: When signed off'),
+    (FOOTER_CUSTOMER, 'Footer: customer pages'),
 )
 
 SEX_CHOICES = (
