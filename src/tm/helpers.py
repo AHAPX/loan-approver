@@ -52,5 +52,8 @@ def get_template(template):
 def gen_reference_num():
     from tm.models import Applicant
 
-    data = Applicant.objects.all().aggregate(Max('reference_number'))
-    return data['reference_number__max'] + 1
+    try:
+        data = Applicant.objects.all().aggregate(Max('reference_number'))
+        return data['reference_number__max'] + 1
+    except:
+        return settings.FIRST_REFERENCE_NUMBER

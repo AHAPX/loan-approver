@@ -151,6 +151,8 @@ REDIS = {
 
 DOCUMENT_DIR = '/documents/'
 
+FIRST_REFERENCE_NUMBER = 32526
+
 try:
     from .local import *
 except:
