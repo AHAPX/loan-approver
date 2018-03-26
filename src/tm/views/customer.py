@@ -46,6 +46,7 @@ class MainData(BaseCustomerStep):
             'footer_customer': footer,
             'first_name': applicant.first_name,
             'last_name': applicant.first_name,
+            'reference_number': applicant.reference_number,
         })
 
 

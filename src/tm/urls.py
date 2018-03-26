@@ -34,6 +34,7 @@ urlpatterns = [
     path('v1/users/<int:pk>/', admin_v.UserDetail.as_view()),
     path('v1/settings/', admin_v.SettingView.as_view(), name='setting'),
 # customer steps
+    path('v1/submit/', SubmitView.as_view(), name='submit'),
     path('a/<token>', customer.main, name='customer_main'),
     path('sign/<token>', customer.signature, name='customer_signature'),
     path('v1/customer/data/', customer.MainData.as_view(), name='customer_data'),
@@ -46,7 +47,6 @@ urlpatterns = [
     path('v1/customer/step7/', customer.Step7.as_view(), name='customer_step7'),
     path('v1/customer/step8/', customer.Step8.as_view(), name='customer_step8'),
 # main
-    path('submit/', SubmitView.as_view(), name='submit'),
     path('admin/', admin.site.urls),
     path('docs/', include_docs_urls(title='TMA API')),
 ]
