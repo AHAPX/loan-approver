@@ -127,6 +127,7 @@ class Step2(BaseCustomerStep):
 
 
 class Step3(BaseCustomerStep):
+    need_sign = True
 
     def get_data(self, applicant):
         return {
@@ -158,6 +159,8 @@ class Step3(BaseCustomerStep):
 
 
 class Step4(BaseCustomerStep):
+    need_sign = True
+
     def get_data(self, applicant):
         return {
             'reference_number': applicant.reference_number,
@@ -201,6 +204,8 @@ class Step4(BaseCustomerStep):
 
 
 class Step5(BaseCustomerStep):
+    need_sign = True
+
     def get_data(self, applicant):
         return {
             'reference_number': applicant.reference_number,
@@ -228,6 +233,8 @@ class Step5(BaseCustomerStep):
 
 
 class Step6(BaseCustomerStep):
+    need_sign = True
+
     def get_data(self, applicant):
         return {
             'reference_number': applicant.reference_number,
@@ -252,6 +259,8 @@ class Step6(BaseCustomerStep):
 
 
 class Step7(BaseCustomerStep):
+    need_sign = True
+
     def get_data(self, applicant):
         return {
             'reference_number': applicant.reference_number,
@@ -275,6 +284,8 @@ class Step7(BaseCustomerStep):
 
 
 class Step8(BaseCustomerStep):
+    need_sign = True
+
     def get_data(self, applicant):
         return {
             'reference_number': applicant.reference_number,
