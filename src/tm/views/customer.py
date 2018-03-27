@@ -26,18 +26,23 @@ logger = logging.getLogger(__name__)
 
 
 class BaseCustomerStep(APIView):
+    need_sign = False
+
     def get_applicant(self, request):
         code = request.GET.get('code')
         try:
-            return Applicant.objects.get(access_token=code)
+            applicant = Applicant.objects.get(access_token=code)
+            if self.need_sign and not applicant.is_signed:
+                return self.error('signature required', 402)
+            return applicant
         except Applicant.DoesNotExist:
             raise Http404
 
     def response(self, step, data={}):
         return Response(data)
 
-    def error(self, errors):
-        return Response({'errors': errors}, status=400)
+    def error(self, errors, status=400):
+        return Response({'errors': errors}, status=status)
 
 
 class MainData(BaseCustomerStep):
@@ -297,16 +302,15 @@ def main(request, token):
         applicant = Applicant.objects.get(id=app_id)
     except Applicant.DoesNotExist:
         raise Http404
-    return redirect('{}?code={}'.format(
-        reverse('customer_step1'),
-        applicant.access_token)
-    )
+    return redirect(get_customer_products(applicant.access_token))
 
 
 def signature(request, token):
     app_id = Cache().get(token, True)
     try:
         applicant = Applicant.objects.get(id=app_id)
+        applicant.is_signed = True
+        applicant.save()
     except Applicant.DoesNotExist:
         raise Http404
     return redirect(get_customer_sign(applicant.access_token))

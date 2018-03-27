@@ -148,6 +148,8 @@ class Applicant(models.Model):
     bank_next_pay_date = models.DateField(null=True, blank=True)
     no_dd = models.CharField(max_length=30, null=True, blank=True)
 
+    is_signed = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

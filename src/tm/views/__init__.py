@@ -76,7 +76,7 @@ class SubmitView(APIView):
 #                }, status=400)
 #            History.add(applicant, RESULT_SUCCESS, call_credit=cc)
             token = Cache().get_token(applicant.id)
-            redirect_url = get_customer_products(token)
+            redirect_url = get_full_url(reverse('customer_main', kwargs={'token': token}))
 #            send_sms(applicant.phone_mobile, redirect_url)
             return Response({
                 'Result': 'Accepted',

@@ -5,7 +5,6 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.db.models import Max
-from django.urls import reverse
 from weasyprint import HTML
 
 
