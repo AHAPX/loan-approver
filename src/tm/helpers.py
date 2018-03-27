@@ -25,7 +25,11 @@ def get_full_url(url):
 
 
 def get_customer_products(token):
-    return get_full_url(reverse('customer_main', kwargs={'token': token}))
+    return get_full_url(f'{settings.CUSTOMER_URL}?code=f{token}')
+
+
+def get_customer_sign(token):
+    return get_full_url(f'{settings.CUSTOMER_SIGN_URL}?code=f{token}')
 
 
 def save_document(text):

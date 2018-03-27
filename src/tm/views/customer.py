@@ -10,7 +10,9 @@ from rest_framework.response import Response
 
 from tm.cache import Cache
 from tm import consts
-from tm.helpers import get_full_url, save_document, get_template, gen_reference_num
+from tm.helpers import (
+    get_full_url, save_document, get_template, get_customer_sign
+)
 from tm.models import Applicant, Product, LoanOutstand
 from tm.serializers import (
     CustomerStep3, CustomerStep4, CustomerStep5, CustomerStep6, CustomerStep7,
@@ -307,7 +309,4 @@ def signature(request, token):
         applicant = Applicant.objects.get(id=app_id)
     except Applicant.DoesNotExist:
         raise Http404
-    return redirect('{}?code={}'.format(
-        reverse('customer_step3'),
-        applicant.access_token)
-    )
+    return redirect(get_customer_sign(applicant.access_token))

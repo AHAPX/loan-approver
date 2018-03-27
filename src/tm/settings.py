@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-MAIN_URL = 'http://188.166.180.46/'
+MAIN_URL = 'localhost'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -133,6 +133,14 @@ REST_FRAMEWORK = {
     ]
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
+}
+
+
 CORS_ORIGIN_ALLOW_ALL = True
 
 CALL_CREDIT = {}
@@ -152,6 +160,9 @@ REDIS = {
 DOCUMENT_DIR = '/documents/'
 
 FIRST_REFERENCE_NUMBER = 32526
+
+CUSTOMER_URL = '/apply'
+CUSTOMER_SIGN_URL = '/apply'
 
 try:
     from .local import *
