@@ -34,7 +34,7 @@ class BaseCustomerStep(APIView):
         try:
             applicant = Applicant.objects.get(access_token=code)
             if self.need_sign and not applicant.is_signed:
-                return self.error('signature required', 402)
+                return self.error('signature required', 403)
             return applicant
         except Applicant.DoesNotExist:
             raise Http404
