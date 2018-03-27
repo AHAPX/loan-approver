@@ -130,14 +130,14 @@ EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
 #        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
-}
-
-REST_FRAMEWORK = {
+    ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-    )
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
 }
 
 
