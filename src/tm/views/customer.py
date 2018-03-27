@@ -11,7 +11,8 @@ from rest_framework.response import Response
 from tm.cache import Cache
 from tm import consts
 from tm.helpers import (
-    get_full_url, save_document, get_template, get_customer_sign
+    get_full_url, save_document, get_template, get_customer_sign,
+    get_customer_products
 )
 from tm.models import Applicant, Product, LoanOutstand
 from tm.serializers import (
