@@ -1,5 +1,6 @@
 import logging
 
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import redirect
@@ -34,7 +35,7 @@ class BaseCustomerStep(APIView):
         try:
             applicant = Applicant.objects.get(access_token=code)
             if self.need_sign and not applicant.is_signed:
-                return self.error('signature required', 403)
+                raise PermissionDenied
             return applicant
         except Applicant.DoesNotExist:
             raise Http404
