@@ -1,6 +1,7 @@
 import logging
 
 from django.http import Http404
+from django.urls import reverse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -12,7 +13,7 @@ from tm.consts import (
     RESULT_REJECT_CALL_CREDIT
 )
 from tm.convertors import ApplicantConvertor
-from tm.helpers import get_customer_products
+from tm.helpers import get_full_url
 from tm.models import Applicant, Introducer, CallCredit, History
 from tm.serializers import SubmitSerializer
 from tm.sms import send_sms
