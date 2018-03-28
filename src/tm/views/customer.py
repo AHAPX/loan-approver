@@ -319,11 +319,13 @@ def main(request, token):
 
 
 def signature(request, token):
+    access_token = token
     app_id = Cache().get(token, True)
     try:
         applicant = Applicant.objects.get(id=app_id)
         applicant.is_signed = True
         applicant.save()
+        access_token = applicant.access_token
     except Applicant.DoesNotExist:
-        raise Http404
-    return redirect(get_customer_sign(applicant.access_token))
+        pass
+    return redirect(get_customer_sign(access_token))
