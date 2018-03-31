@@ -320,7 +320,7 @@ def main(request, token):
 
 def signature(request, token):
     access_token = token
-    app_id = Cache().get(token, True)
+    app_id = Cache().get(token)
     try:
         applicant = Applicant.objects.get(id=app_id)
         applicant.is_signed = True
