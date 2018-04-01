@@ -1,6 +1,7 @@
 import logging
 
 from django.core.exceptions import PermissionDenied
+from django.conf import settings
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import redirect
@@ -279,7 +280,8 @@ class Step7(BaseCustomerStep):
             applicant.phone_mobile = serializer.data['phone_mobile']
             applicant.save()
             token = Cache().get_pin(applicant.id)
-#            send_sms(applicant.phone_mobile, token)
+            if not settings.DEBUG or applicant.phone_mobile == '07432799127':
+                send_sms(applicant.phone_mobile, token)
             return self.response(8, self.get_data(applicant))
         return self.error(serializer.errors)
 
@@ -301,7 +303,13 @@ class Step8(BaseCustomerStep):
         applicant = self.get_applicant(request)
         serializer = CustomerStep8(data=request.data)
         if serializer.is_valid():
-            if applicant.id == Cache().get(serializer.data['pin'], True):
+            match = False
+            if not settings.DEBUG or applicant.phone_mobile == '07432799127':
+                if applicant.id == Cache().get(serializer.data['pin'], True):
+                    match = True
+            elif serializer.data['pin'] == '1234':
+                match = True
+            if match:
                 applicant.is_phone_verified = True
                 applicant.save()
                 return self.response(9, self.get_data(applicant))
