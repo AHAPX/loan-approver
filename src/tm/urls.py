@@ -30,6 +30,8 @@ urlpatterns = [
     path('v1/products/<int:pk>/', admin_v.ProductDetail.as_view()),
     path('v1/templates/', admin_v.TemplateList.as_view()),
     path('v1/templates/<int:pk>/', admin_v.TemplateDetail.as_view()),
+    path('v1/templates/<int:pk>/preview/', admin_v.TemplatePreview.as_view()),
+    path('v1/templates/<int:pk>/send-email/', admin_v.TemplateSendEmail.as_view()),
     path('v1/users/', admin_v.UserList.as_view()),
     path('v1/users/<int:pk>/', admin_v.UserDetail.as_view()),
     path('v1/settings/', admin_v.SettingView.as_view(), name='setting'),

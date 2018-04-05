@@ -318,6 +318,7 @@ class Step8(BaseCustomerStep):
 
 
 def main(request, token):
+    logger.warning('REFERER = {}'.format(request.META.get('HTTP_REFERER')))
     app_id = Cache().get(token, True)
     try:
         applicant = Applicant.objects.get(id=app_id)

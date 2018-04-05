@@ -1,3 +1,4 @@
+from io import BytesIO
 import os
 import random
 import string
@@ -5,7 +6,7 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.db.models import Max
-from weasyprint import HTML
+from xhtml2pdf import pisa
 
 
 SYMBOLS = string.ascii_letters + string.digits
@@ -32,14 +33,12 @@ def get_customer_sign(token):
 
 
 def save_document(text):
-    filename = os.path.join(settings.DOCUMENT_DIR, f'agreement_{gen_token()}.txt')
-    open(filename, 'w').write(text)
-    return filename
-#    pdf = HTML(string=f'<html><body>{text}</body></html>').write_pdf(filename)
-#    body = f'<!-- BEGIN (text) (main) -->\n{text}<!-- END (text) (main) -->\n'
-    body = text
-#    pdf = HTML(string=f'<html><body>{body}</body></html>').write_pdf()
-    open(os.path.join(settings.DOCUMENT_DIR, filename), 'w').write(pdf.decode('iso-8859-1'))
+    filename = os.path.join(settings.DOCUMENT_DIR, f'agreement_{gen_token()}.pdf')
+    pdf = BytesIO()
+    pisa.CreatePDF(text, pdf)
+    rendered = pdf.getvalue()
+    pdf.close()
+    open(filename, 'w').write(rendered.decode('utf-8', 'ignore'))
     return filename
 
 
