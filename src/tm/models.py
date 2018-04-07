@@ -12,14 +12,14 @@ from .helpers import gen_token, gen_reference_num
 
 
 class Introducer(models.Model):
-    auth_code = models.CharField(max_length=64, null=True, blank=True)
+    auth_code = models.CharField(max_length=64, default=gen_token(64))
     ip = models.CharField(max_length=15, null=True, blank=True)
     netmask = models.CharField(max_length=15, null=True, blank=True)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
     website = models.URLField(max_length=100, null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -17,11 +17,15 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.documentation import include_docs_urls
 
-from tm.views import SubmitView, admin as admin_v, customer
+from tm.views import (
+    RegisterView, VerifyView, SubmitView, ApplicantSearchView,
+    admin as admin_v, customer
+)
 
 
 urlpatterns = [
     path('v1/', include('rest_framework.urls')),
+# admin
     path('v1/applicants/', admin_v.ApplicantList.as_view()),
     path('v1/applicants/<int:pk>/', admin_v.ApplicantDetail.as_view()),
     path('v1/introducers/', admin_v.IntroducerList.as_view()),
@@ -35,8 +39,11 @@ urlpatterns = [
     path('v1/users/', admin_v.UserList.as_view()),
     path('v1/users/<int:pk>/', admin_v.UserDetail.as_view()),
     path('v1/settings/', admin_v.SettingView.as_view(), name='setting'),
-# customer steps
+    path('v1/register/', RegisterView.as_view(), name='register'),
+    path('v1/verify/', VerifyView.as_view(), name='verify'),
     path('v1/submit/', SubmitView.as_view(), name='submit'),
+    path('v1/search/', ApplicantSearchView.as_view(), name='search'),
+# customer steps
     path('a/<token>', customer.main, name='customer_main'),
     path('sign/<token>', customer.signature, name='customer_signature'),
     path('v1/customer/data/', customer.MainData.as_view(), name='customer_data'),

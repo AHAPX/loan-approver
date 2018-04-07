@@ -1,9 +1,11 @@
 import logging
 
+from django.db.models import Q
 from django.http import Http404
 from django.urls import reverse
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import permissions
 
 from tm.cache import Cache
 from tm.callcredit import search_request
@@ -15,11 +17,34 @@ from tm.consts import (
 from tm.convertors import ApplicantConvertor
 from tm.helpers import get_full_url
 from tm.models import Applicant, Introducer, CallCredit, History
-from tm.serializers import SubmitSerializer
+from tm.serializers import (
+    SubmitSerializer, RegisterSerializer, VerifySerializer, ApplicantSerializer
+)
 from tm.sms import send_sms
 
 
 logger = logging.getLogger(__name__)
+
+
+class RegisterView(APIView):
+    def get(self, request):
+        serializer = RegisterSerializer(data=request.query_params)
+        if serializer.is_valid():
+            introducer = Introducer.objects.create(ip=serializer.data['ip'])
+            return Response({'auth': introducer.auth_code})
+        return Response(serializer.errors, status=400)
+
+
+class VerifyView(APIView):
+    def get(self, request):
+        serializer = VerifySerializer(data=request.query_params)
+        if serializer.is_valid():
+            try:
+                introducer = Introducer.objects.get(auth_code=serializer.data['auth'])
+                return Response(status=200)
+            except Introducer.DoesNotExist:
+                raise Http404
+        return Response(serializer.errors, status=400)
 
 
 class SubmitView(APIView):
@@ -91,3 +116,24 @@ class SubmitView(APIView):
             'CustomerID': introducer.id,
             'Error': 'Mandatory Field',
         }, status=400)
+
+
+class ApplicantSearchView(APIView):
+    permission_classes = (permissions.IsAdminUser,)
+    fields = {
+        'loanrefnumber': 'access_token',
+        'first_name': 'first_name',
+        'last_name': 'last_name',
+        'phone_landline': 'phone_laldline',
+        'phone_mobile': 'phone_mobile',
+        'postcode': 'addr_postcode',
+    }
+
+    def get(self, request):
+        query = Q()
+        for param, field in self.fields.items():
+            if param in request.query_params:
+                query &= Q(**{field: request.query_params[param]})
+        applicants = Applicant.objects.filter(query)
+        data = [ApplicantSerializer(instance=app).data for app in applicants]
+        return Response({'applicants': data})

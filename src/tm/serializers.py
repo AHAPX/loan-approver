@@ -5,6 +5,14 @@ from .models import Applicant, Introducer, Template, Product
 from .consts import PAY_FREQUENCY_CHOICES, LIVE_WITH_CHOICES
 
 
+class RegisterSerializer(serializers.Serializer):
+    ip = serializers.IPAddressField()
+
+
+class VerifySerializer(serializers.Serializer):
+    auth = serializers.CharField(min_length=64, max_length=64, required=True)
+
+
 class SubmitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Applicant
