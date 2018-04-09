@@ -85,22 +85,24 @@ class SubmitView(APIView):
                     'CustomerID': introducer.id,
                     'Error': 'Invalid Format',
                 }, status=400)
-#            cc = CallCredit(applicant=applicant, data=data)
-#            cc.extract()
-#            errors = CallCreditChecker().check(cc)
-#            if errors:
-#                History.add(
-#                    applicant,
-#                    RESULT_REJECT_CALL_CREDIT,
-#                    call_credit=cc,
-#                    data={'fields': errors}
-#                )
-#                return Response({
-#                    'Result': 'Rejected',
-#                    'CustomerID': introducer.id,
-#                    'errors': errors,
-#                }, status=400)
-#            History.add(applicant, RESULT_SUCCESS, call_credit=cc)
+# call credir checking
+            cc = CallCredit(applicant=applicant, data=data)
+            cc.extract()
+            errors = CallCreditChecker().check(cc)
+            if errors:
+                History.add(
+                    applicant,
+                    RESULT_REJECT_CALL_CREDIT,
+                    call_credit=cc,
+                    data={'fields': errors}
+                )
+                return Response({
+                    'Result': 'Rejected',
+                    'CustomerID': introducer.id,
+                    'errors': errors,
+                }, status=400)
+            History.add(applicant, RESULT_SUCCESS, call_credit=cc)
+# checking success, send sms
             token = Cache().get_token(applicant.id)
             redirect_url = get_full_url(reverse('customer_main', kwargs={'token': token}))
 #            send_sms(applicant.phone_mobile, redirect_url)

@@ -203,10 +203,13 @@ class Setting(models.Model):
     occupation = models.CharField(max_length=500, default='', blank=True)
     postcode = models.CharField(max_length=500, default='', blank=True)
 
-    credit_score_min = models.IntegerField(default=0, blank=True)
+    credit_score_min = models.IntegerField(default=470, blank=True)
+    credit_score_min_no_mortgage = models.IntegerField(default=490, blank=True)
     indebt_min = models.FloatField(default=0, blank=True)
     active_bunkruptcy = models.BooleanField(default=True)
     acc_for_years = models.IntegerField(default=3, blank=True)
+    dti_ratio_min = models.IntegerField(default=0, blank=True)
+    dti_ratio_max = models.IntegerField(default=24, blank=True)
 
     def __str__(self):
         return f'{self.name}'

@@ -47,6 +47,27 @@ def check_mortgage(accs, *args):
     return True
 
 
+def check_score(credit_score, accs, value):
+    mortgage = False
+    for acc in accs.get('acc', []):
+        details = acc.get('accdetails', {})
+        if int(details.get('accgroupid', 0)) == 2 and details.get('status') == 'N':
+            mortgage = True
+            break
+    return mortgage or credit_score >= value
+
+
+#DTI Ratio Calculation
+#Total Unsecured Credit (From CallReport) / (Income - dti_margin - mortgage/rent)
+def check_dti(accs, value):
+    balance, credit = 0, 0
+    for acc in accs.get('acc', []):
+        details = acc.get('accdetails', {})
+        if details.get('status') != 'S':
+            balance += float(details.get('balance', 0))
+    return True
+
+
 def check_acc_for_years(accs, years):
     last_date = datetime.today() - timedelta(365 * years)
     for acc in accs.get('acc', []):
@@ -109,6 +130,10 @@ RULES_CALL_CREDIT = {
         'field': 'credit_score',
         'check': gte,
     },
+    'credit_score_min_no_mortgage': {
+        'field': ('credit_score', 'accs'),
+        'check': check_score,
+    },
     'indebt_min': {
         'field': 'indebt',
         'check': gte,
@@ -125,6 +150,10 @@ RULES_CALL_CREDIT = {
         'field': 'accs',
         'check': check_acc_for_years,
     },
+#    'dti_ratio': {
+#        'field': 'accs',
+#        'check': check_dti,
+#    },
 }
 
 
@@ -136,16 +165,23 @@ class BaseChecker():
         for key, rule in self.rules.items():
             setting = Setting.get_setting()
             setting_value = getattr(setting, key, None)
-#            if setting_value is None:
-#                continue
             field = rule['field']
-            value = getattr(item, field, None)
-            if value == None:
-                errors.append(key)
+            if not isinstance(field, (list, tuple)):
+                field = (field,)
+            params = []
+            err = False
+            for f in field:
+                value = getattr(item, f, None)
+                if value == None:
+                    errors.append(key)
+                    err = True
+                    continue
+                if rule.get('format'):
+                    value = rule['format'](value)
+                params.append(value)
+            if err:
                 continue
-            if rule.get('format'):
-                value = rule['format'](value)
-            if not rule['check'](value, setting_value):
+            if not rule['check'](*params, setting_value):
                 errors.append(key)
         return errors
 

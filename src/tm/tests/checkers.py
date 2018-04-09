@@ -165,16 +165,16 @@ class CheckerTest(TestCase):
             },
         }
         expect = [
-            'credit_score_min', 'indebt_min', 'delinquent_mortgage',
-            'active_bunkruptcy', 'acc_for_years'
+            'credit_score_min', 'credit_score_min_no_mortgage', 'indebt_min',
+            'delinquent_mortgage', 'active_bunkruptcy', 'acc_for_years'
         ]
         self.assertEqual(CallCreditChecker().check(Dummy(**data)), expect)
 
-        # correct data and settings
+        # wrong data and settings
         self.setting.active_bunkruptcy = False
         self.setting.save()
         data = {
-            'credit_score': 150,
+            'credit_score': 480,
             'indebt': 3500,
             'active_bunkruptcy': True,
             'accs': {
@@ -191,4 +191,9 @@ class CheckerTest(TestCase):
                 }],
             },
         }
+        expect = ['credit_score_min_no_mortgage']
+        self.assertEqual(CallCreditChecker().check(Dummy(**data)), expect)
+
+        # correct data
+        data['accs']['acc'][0]['accdetails']['status'] = 'N'
         self.assertFalse(CallCreditChecker().check(Dummy(**data)))
