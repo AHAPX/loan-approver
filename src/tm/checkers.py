@@ -57,15 +57,16 @@ def check_score(credit_score, accs, value):
     return mortgage or credit_score >= value
 
 
-#DTI Ratio Calculation
-#Total Unsecured Credit (From CallReport) / (Income - dti_margin - mortgage/rent)
-def check_dti(accs, value):
-    balance, credit = 0, 0
-    for acc in accs.get('acc', []):
-        details = acc.get('accdetails', {})
-        if details.get('status') != 'S':
-            balance += float(details.get('balance', 0))
-    return True
+def check_dti_min(credit, mortgage, applicant, value):
+    margin = Setting.get_setting().dti_margin
+    dti = credit / (applicant.income - margin - mortgage / applicant.rent_mortgage)
+    return dti >= value
+
+
+def check_dti_max(credit, mortgage, applicant, value):
+    margin = Setting.get_setting().dti_margin
+    dti = credit / (applicant.income - margin - mortgage / applicant.rent_mortgage)
+    return dti <= value
 
 
 def check_acc_for_years(accs, years):
@@ -150,10 +151,14 @@ RULES_CALL_CREDIT = {
         'field': 'accs',
         'check': check_acc_for_years,
     },
-#    'dti_ratio': {
-#        'field': 'accs',
-#        'check': check_dti,
-#    },
+    'dti_ratio_min': {
+        'field': ('unsecured_credit', 'mortgage', 'applicant'),
+        'check': check_dti_min,
+    },
+    'dti_ratio_max': {
+        'field': ('unsecured_credit', 'mortgage', 'applicant'),
+        'check': check_dti_max,
+    },
 }
 
 
@@ -175,7 +180,7 @@ class BaseChecker():
                 if value == None:
                     errors.append(key)
                     err = True
-                    continue
+                    break
                 if rule.get('format'):
                     value = rule['format'](value)
                 params.append(value)

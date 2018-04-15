@@ -166,7 +166,8 @@ class CheckerTest(TestCase):
         }
         expect = [
             'credit_score_min', 'credit_score_min_no_mortgage', 'indebt_min',
-            'delinquent_mortgage', 'active_bunkruptcy', 'acc_for_years'
+            'delinquent_mortgage', 'active_bunkruptcy', 'acc_for_years',
+            'dti_ratio_min', 'dti_ratio_max',
         ]
         self.assertEqual(CallCreditChecker().check(Dummy(**data)), expect)
 
@@ -190,10 +191,20 @@ class CheckerTest(TestCase):
                     },
                 }],
             },
+            'unsecured_credit': 10,
+            'mortgage': 10,
+            'applicant': Dummy(income=1, rent_mortgage=2),
         }
-        expect = ['credit_score_min_no_mortgage']
+        expect = ['credit_score_min_no_mortgage', 'dti_ratio_min']
+        self.assertEqual(CallCreditChecker().check(Dummy(**data)), expect)
+
+        # wrong dt_ratio_max
+        data['mortgage'] = 1
+        data['unsecured_credit'] = 100
+        expect = ['credit_score_min_no_mortgage', 'dti_ratio_max']
         self.assertEqual(CallCreditChecker().check(Dummy(**data)), expect)
 
         # correct data
         data['accs']['acc'][0]['accdetails']['status'] = 'N'
+        data['unsecured_credit'] = 10
         self.assertFalse(CallCreditChecker().check(Dummy(**data)))

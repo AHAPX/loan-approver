@@ -124,6 +124,8 @@ SUBMIT_FIELDS = {
 CALL_CREDIT_FIELDS = {
     'credit_score': BSBAndCreditField('creditscores.creditscore.score', get_text, int),
     'indebt': BSBAndCreditField('summary.indebt.totallimitsrevolve', float),
+    'unsecured_credit': BSBAndCreditField('summary.indebt.totalbalancesrevolve', float),
+    'mortgage': BSBAndCreditField('summary.indebt.totalbalancesmortgages', float),
     'accs': BSBAndCreditField('accs'),
     'active_bunkruptcy': BSBAndCreditField('summary.bais.currentlyinsolvent', int, bool),
 }

@@ -210,6 +210,7 @@ class Setting(models.Model):
     acc_for_years = models.IntegerField(default=3, blank=True)
     dti_ratio_min = models.IntegerField(default=0, blank=True)
     dti_ratio_max = models.IntegerField(default=24, blank=True)
+    dti_margin = models.FloatField(default=0, blank=True)
 
     def __str__(self):
         return f'{self.name}'
