@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib.auth import authenticate
 from django.db.models import Q
 from django.http import Http404
 from django.urls import reverse
@@ -18,12 +19,31 @@ from tm.convertors import ApplicantConvertor
 from tm.helpers import get_full_url
 from tm.models import Applicant, Introducer, CallCredit, History
 from tm.serializers import (
-    SubmitSerializer, RegisterSerializer, VerifySerializer, ApplicantSerializer
+    SubmitSerializer, RegisterSerializer, VerifySerializer, ApplicantSerializer,
+    LoginSerializer
 )
 from tm.sms import send_sms
 
 
 logger = logging.getLogger(__name__)
+
+
+class LoginView(APIView):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return Response({'user': request.user.username})
+        return Response(status=401)
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = authenticate(
+                username=serializer.data['username'],
+                password=serializer.data['password']
+            )
+            if user is not None:
+                return Response(data={'message': 'login successful'})
+        return Response(serializer.errors, status=400)
 
 
 class RegisterView(APIView):

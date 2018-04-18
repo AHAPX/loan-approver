@@ -9,6 +9,11 @@ class RegisterSerializer(serializers.Serializer):
     ip = serializers.IPAddressField()
 
 
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+
 class VerifySerializer(serializers.Serializer):
     auth = serializers.CharField(min_length=64, max_length=64, required=True)
 

@@ -18,7 +18,7 @@ from django.urls import path, include
 from rest_framework.documentation import include_docs_urls
 
 from tm.views import (
-    RegisterView, VerifyView, SubmitView, ApplicantSearchView,
+    RegisterView, VerifyView, SubmitView, ApplicantSearchView, LoginView,
     admin as admin_v, customer
 )
 
@@ -39,6 +39,7 @@ urlpatterns = [
     path('v1/users/', admin_v.UserList.as_view()),
     path('v1/users/<int:pk>/', admin_v.UserDetail.as_view()),
     path('v1/settings/', admin_v.SettingView.as_view(), name='setting'),
+    path('v1/auth/login/', LoginView.as_view(), name='login'),
     path('v1/register/', RegisterView.as_view(), name='register'),
     path('v1/verify/', VerifyView.as_view(), name='verify'),
     path('v1/submit/', SubmitView.as_view(), name='submit'),
