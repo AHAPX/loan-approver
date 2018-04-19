@@ -144,7 +144,7 @@ class SubmitView(APIView):
 class ApplicantSearchView(APIView):
     permission_classes = (permissions.IsAdminUser,)
     fields = {
-        'loanrefnumber': 'access_token',
+        'loanrefnumber': 'reference_number',
         'first_name': 'first_name',
         'last_name': 'last_name',
         'phone_landline': 'phone_laldline',
