@@ -1,6 +1,6 @@
 import logging
 
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.db.models import Q
 from django.http import Http404
 from django.urls import reverse
@@ -42,7 +42,8 @@ class LoginView(APIView):
                 password=serializer.data['password']
             )
             if user is not None:
-                return Response(data={'message': 'login successful'})
+                login(request, user)
+                return Response(data={'user': user.username})
         return Response(serializer.errors, status=400)
 
 
