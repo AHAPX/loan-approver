@@ -116,8 +116,10 @@ class SettingView(APIView):
     permission_classes = (permissions.IsAdminUser,)
     fields = (
         'age_max', 'age_min', 'employment_status', 'income_min',
-        'loan_amount_min', 'loan_amount_max', 'employer', 'occupation',
-        'postcode',
+        'loan_amount_min', 'loan_amount_max', 'employer',
+        'occupation', 'postcode', 'credit_score_min',
+        'credit_score_min_no_mortgage', 'indebt_min', 'active_bunkruptcy',
+        'acc_for_years', 'dti_ratio_min', 'dti_ratio_max', 'dti_margin',
     )
 
     def get(self, request):

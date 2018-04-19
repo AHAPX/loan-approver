@@ -179,6 +179,14 @@ class SettingTest(BaseViewTestMixin, TestCase):
             'employer': 'badcompany',
             'occupation': 'badoccupation',
             'postcode': '12345',
+            'credit_score_min': 0,
+            'credit_score_min_no_mortgage': 490,
+            'indebt_min': 0.0,
+            'active_bunkruptcy': True,
+            'acc_for_years': 3,
+            'dti_ratio_min': 0,
+            'dti_ratio_max': 24,
+            'dti_margin': 0.5
         }
         setting = Setting.objects.create(is_active=True, **new_data)
         resp = self.client.get('/v1/settings/')
@@ -196,6 +204,14 @@ class SettingTest(BaseViewTestMixin, TestCase):
             'employer': 'badcompany,verybad',
             'occupation': 'badoccupation,programmer',
             'postcode': '12345,12456,15432',
+            'credit_score_min': 3,
+            'credit_score_min_no_mortgage': 600,
+            'indebt_min': 2.0,
+            'active_bunkruptcy': False,
+            'acc_for_years': 5,
+            'dti_ratio_min': 6,
+            'dti_ratio_max': 20,
+            'dti_margin': 5.5
         }
         resp = self.client.put(
             '/v1/settings/',

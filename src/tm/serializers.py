@@ -90,11 +90,22 @@ class SettingSerializer(serializers.Serializer):
     occupation = serializers.CharField(required=False)
     postcode = serializers.CharField(required=False)
 
+    credit_score_min = serializers.IntegerField(required=False)
+    credit_score_min_no_mortgage = serializers.IntegerField(required=False)
+    indebt_min = serializers.FloatField(required=False)
+    active_bunkruptcy = serializers.BooleanField(required=False)
+    acc_for_years = serializers.IntegerField(required=False)
+    dti_ratio_min = serializers.IntegerField(required=False)
+    dti_ratio_max = serializers.IntegerField(required=False)
+    dti_margin = serializers.FloatField(required=False)
+
     def save(self):
         fields = (
             'age_max', 'age_min', 'employment_status', 'income_min',
             'loan_amount_min', 'loan_amount_max', 'employer',
-            'occupation', 'postcode',
+            'occupation', 'postcode', 'credit_score_min',
+            'credit_score_min_no_mortgage', 'indebt_min', 'active_bunkruptcy',
+            'acc_for_years', 'dti_ratio_min', 'dti_ratio_max', 'dti_margin',
         )
         for field in fields:
             value = getattr(self.instance, field, None)
