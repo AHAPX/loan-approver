@@ -49,9 +49,9 @@ class ApplicantSerializer(serializers.ModelSerializer):
             'addr2_city', 'addr2_country', 'addr2_postcode', 'addr2_since',
             'employment_status', 'employer_name', 'occupation', 'employer_address',
             'employee_since', 'employment_payment', 'job_title', 'income',
-            'income_split', 'nin',
+            'income_split', 'nin', 'employer_years', 'employer_months',
             'bank_sort_code', 'bank_account_number', 'bank_pay_frequency',
-            'bank_next_pay_date', 'no_dd', 'reference_id',
+            'bank_next_pay_date', 'no_dd', 'reference_id', 'reference_number',
         )
 
 

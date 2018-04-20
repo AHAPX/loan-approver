@@ -156,6 +156,18 @@ class Applicant(models.Model):
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
+    @property
+    def employer_years(self):
+        if self.employee_since:
+            return int((datetime.date() - self.employee_since) / (60 * 60 * 24 * 365))
+        return 0
+
+    @property
+    def employer_months(self):
+        if self.employee_since:
+            return int((datetime.date() - self.employee_since) / (60 * 60 * 24 * 30))
+        return 0
+
 
 class LoanOutstand(models.Model):
     applicant = models.ForeignKey(Applicant, related_name='loans', on_delete=models.CASCADE)

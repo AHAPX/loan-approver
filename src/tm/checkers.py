@@ -7,6 +7,7 @@ from django.conf import settings
 import xmltodict
 
 from .models import Setting
+from tm.helpers import number
 
 
 logger = logging.getLogger(__name__)
@@ -57,16 +58,20 @@ def check_score(credit_score, accs, value):
     return mortgage or credit_score >= value
 
 
-def check_dti_min(credit, mortgage, applicant, value):
+def get_dti(credit, mortgage, applicant):
     margin = Setting.get_setting().dti_margin
-    dti = credit / (applicant.income - margin - mortgage / applicant.rent_mortgage)
-    return dti >= value
+    return number(credit) / number(
+        number(applicant.income) - number(margin) - (
+            number(mortgage) / number(applicant.rent_mortgage, 1)
+        ), 1)
+
+
+def check_dti_min(credit, mortgage, applicant, value):
+    return get_dti(credit, mortgage, applicant) >= value
 
 
 def check_dti_max(credit, mortgage, applicant, value):
-    margin = Setting.get_setting().dti_margin
-    dti = credit / (applicant.income - margin - mortgage / applicant.rent_mortgage)
-    return dti <= value
+    return get_dti(credit, mortgage, applicant) <= value
 
 
 def check_acc_for_years(accs, years):

@@ -59,3 +59,7 @@ def gen_reference_num():
         return data['reference_number__max'] + 1
     except:
         return settings.FIRST_REFERENCE_NUMBER
+
+
+def number(value, default=0):
+    return float(value or default)

@@ -11,28 +11,26 @@ logger = logging.getLogger(__name__)
 
 
 def create_url_widget(filename, url):
-    body = open(filename).read().encode('utf8')
-#    logger.warning(body)
+    body = open(filename, encoding='iso-8859-1').read().encode()#'iso-8859-1')
     context = {
         'api_key': settings.ECHOSIGN_API_KEY,
         'file': base64.b64encode(body),
         'filename': filename,
         'redirect': url,
     }
-#    logger.warning(context)
-    body = render_to_string('sign_widget.xml', context)
+    data = render_to_string('sign_widget.xml', context)
     response = requests.post(
         settings.ECHOSIGN_API_URL,
-        data=body,
+        data=data.strip(),
         headers={
             'Content-Type'  : 'text/xml; charset=UTF-8',
             'SOAPAction'    : '""'
         }
     )
-    data = xmltodict.parse(response.text)
-    logging.getLogger(__name__).error(data)
+    resp = xmltodict.parse(response.text)
     try:
-        return data['soap:Envelope']['soap:Body']['ns1:createUrlWidgetResponse']\
+        return resp['soap:Envelope']['soap:Body']['ns1:createUrlWidgetResponse']\
             ['ns1:urlWidgetCreationResult']['url']['#text']
     except:
+        logging.getLogger(__name__).error(resp)
         raise
