@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
@@ -159,13 +161,15 @@ class Applicant(models.Model):
     @property
     def employer_years(self):
         if self.employee_since:
-            return int((datetime.date() - self.employee_since) / (60 * 60 * 24 * 365))
+            return int((datetime.today().date() - self.employee_since).totalseconds() / (60 * 60 * 24 * 365))
         return 0
 
     @property
     def employer_months(self):
         if self.employee_since:
-            return int((datetime.date() - self.employee_since) / (60 * 60 * 24 * 30))
+            years = self.employer_years()
+            months = int((datetime.now().date()- self.employee_since).totalseconds() / (60 * 60 * 24 * 30))
+            return months - years * 12
         return 0
 
 
